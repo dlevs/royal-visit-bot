@@ -26,17 +26,15 @@ export class Player {
   playTurn() {
     const cardsByType = groupBy(this.cards, (card) => card.type);
 
-    const cardsToPlay = maxBy(
-      Object.values(cardsByType),
-      (type) => type.length
-    );
+    const cardsToPlay =
+      maxBy(Object.values(cardsByType), (type) => type.length) ?? [];
 
-    if (!cardsToPlay) {
-      return;
-    }
+    this.playCards(cardsToPlay);
+  }
 
+  playCards(cards: Card[]) {
     this.cards = this.cards.filter((card) => {
-      return !cardsToPlay.includes(card);
+      return !cards.includes(card);
     });
   }
 }

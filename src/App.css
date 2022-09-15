@@ -17,19 +17,72 @@
 }
 
 .card-type-guard {
-  color: #807877;
+  color: var(--color-guard);
 }
 
 .card-type-king {
-  color: #c2000c;
+  color: var(--color-king);
 }
 
 .card-type-wizard {
-  color: #ff7e00;
+  color: var(--color-wizard);
 }
 
 .card-type-jester {
-  color: #00dcfa;
+  color: var(--color-jester);
+}
+
+.board {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+}
+
+.board-tile {
+  flex: 1;
+  background: #eee;
+}
+
+.board-tile-blue {
+  background: #e0f7fc;
+}
+
+.board-tile-red {
+  background: #f8e4f6;
+}
+
+.crown-space {
+  height: 2rem;
+  border: 4px solid #b0afaf;
+}
+
+.board-tile-chateau .crown-space {
+  border-color: #fbd700;
+}
+
+.piece-space {
+  height: 8rem;
+}
+
+.piece {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.piece-king::before {
+  content: "👑";
+}
+
+.piece-guard::before {
+  content: "💂🏼‍♀️";
+}
+
+.piece-wizard::before {
+  content: "🧙🏻";
+}
+
+.piece-jester::before {
+  content: "🤪";
 }
 
 @keyframes logo-spin {
