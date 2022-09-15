@@ -26,14 +26,16 @@ export class Deck {
     let i = n;
     while (i--) {
       let card = this.cards.pop();
-      if (!card) {
+      if (!card && !this.finished) {
         // TODO: We should not just put all cards back.
         // Cards in play should remain out of the deck.
         this.reshuffle();
-        card = this.cards.pop()!;
+        card = this.cards.pop();
       }
 
-      cards.push(card);
+      if (card) {
+        cards.push(card);
+      }
 
       if (this.finished) {
         this.onFinished();
@@ -70,7 +72,7 @@ const guardCards: CardDefinitionArray<GuardCard> = [
     move: "move-2",
   },
   {
-    qty: 10,
+    qty: 2,
     type: "guard",
     move: "flank-king",
   },
@@ -104,7 +106,7 @@ const wizardCards: CardDefinitionArray<WizardCard> = [
 
 const jesterCards: CardDefinitionArray<JesterCard> = [
   {
-    qty: 12,
+    qty: 2,
     type: "jester",
     move: "move-middle",
   },

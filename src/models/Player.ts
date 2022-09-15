@@ -1,3 +1,4 @@
+import { groupBy, maxBy, sortBy } from "lodash";
 import { Card, Deck } from "./Deck";
 
 type PlayerColor = "red" | "blue";
@@ -18,5 +19,24 @@ export class Player {
     if (cardsToDraw > 0) {
       this.cards.push(...deck.draw(cardsToDraw));
     }
+
+    this.cards = sortBy(this.cards, (card) => `${card.type}${card.move}`);
+  }
+
+  playTurn() {
+    const cardsByType = groupBy(this.cards, (card) => card.type);
+
+    const cardsToPlay = maxBy(
+      Object.values(cardsByType),
+      (type) => type.length
+    );
+
+    if (!cardsToPlay) {
+      return;
+    }
+
+    this.cards = this.cards.filter((card) => {
+      return !cardsToPlay.includes(card);
+    });
   }
 }

@@ -21,7 +21,10 @@ function App() {
                   {player.cards.map((card, i) => {
                     return (
                       <li key={i}>
-                        <strong>{card.type}:</strong> {card.move}
+                        <strong className={`card-type-${card.type}`}>
+                          {card.type}:
+                        </strong>{" "}
+                        {card.move}
                       </li>
                     );
                   })}

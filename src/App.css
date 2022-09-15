@@ -2,7 +2,6 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
 .logo {
@@ -15,6 +14,22 @@
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.card-type-guard {
+  color: #807877;
+}
+
+.card-type-king {
+  color: #c2000c;
+}
+
+.card-type-wizard {
+  color: #ff7e00;
+}
+
+.card-type-jester {
+  color: #00dcfa;
 }
 
 @keyframes logo-spin {
