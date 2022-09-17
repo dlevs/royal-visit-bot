@@ -1,12 +1,13 @@
 import { shuffle } from "lodash";
+import type { Game } from "./Game";
 
 export class Deck {
   cards = getShuffledDeck();
   phase = 0;
-  onFinished: () => void;
+  game: Game;
 
-  constructor(onFinished: () => void) {
-    this.onFinished = onFinished;
+  constructor(game: Game) {
+    this.game = game;
   }
 
   reshuffle() {
@@ -37,9 +38,9 @@ export class Deck {
         cards.push(card);
       }
 
-      if (this.finished) {
-        this.onFinished();
-      }
+      // if (this.finished) {
+      //   this.onFinished();
+      // }
     }
 
     return cards;
@@ -64,12 +65,12 @@ const guardCards: CardDefinitionArray<GuardCard> = [
   {
     qty: 4,
     type: "guard",
-    move: "move-1",
+    move: 1,
   },
   {
     qty: 10,
     type: "guard",
-    move: "move-2",
+    move: 2,
   },
   {
     qty: 2,
@@ -82,7 +83,7 @@ const kingCards: CardDefinitionArray<KingCard> = [
   {
     qty: 12,
     type: "king",
-    move: "move-1",
+    move: 1,
   },
 ];
 
@@ -90,17 +91,17 @@ const wizardCards: CardDefinitionArray<WizardCard> = [
   {
     qty: 2,
     type: "wizard",
-    move: "move-1",
+    move: 1,
   },
   {
     qty: 8,
     type: "wizard",
-    move: "move-2",
+    move: 2,
   },
   {
     qty: 2,
     type: "wizard",
-    move: "move-3",
+    move: 3,
   },
 ];
 
@@ -113,27 +114,27 @@ const jesterCards: CardDefinitionArray<JesterCard> = [
   {
     qty: 1,
     type: "jester",
-    move: "move-1",
+    move: 1,
   },
   {
     qty: 3,
     type: "jester",
-    move: "move-2",
+    move: 2,
   },
   {
     qty: 4,
     type: "jester",
-    move: "move-3",
+    move: 3,
   },
   {
     qty: 3,
     type: "jester",
-    move: "move-4",
+    move: 4,
   },
   {
     qty: 1,
     type: "jester",
-    move: "move-5",
+    move: 5,
   },
 ];
 
@@ -143,20 +144,20 @@ export type Card = GuardCard | KingCard | WizardCard | JesterCard;
 
 interface GuardCard {
   type: "guard";
-  move: "move-1" | "move-2" | "flank-king";
+  move: 1 | 2 | "flank-king";
 }
 
 interface KingCard {
   type: "king";
-  move: "move-1";
+  move: 1;
 }
 
 interface WizardCard {
   type: "wizard";
-  move: "move-1" | "move-2" | "move-3";
+  move: 1 | 2 | 3;
 }
 
 interface JesterCard {
   type: "jester";
-  move: "move-middle" | "move-1" | "move-2" | "move-3" | "move-4" | "move-5";
+  move: "move-middle" | 1 | 2 | 3 | 4 | 5;
 }
