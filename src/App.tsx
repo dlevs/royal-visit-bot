@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import "./App.css";
 import { Game } from "./models/Game";
 
-const game = new Game(() => {});
+const game = new Game();
 
 function App() {
   const [turn, setTurn] = useState(0);
@@ -53,17 +53,21 @@ function App() {
                 {player.cards.map((card, i) => {
                   return (
                     <li key={i}>
-                      <strong className={`card-type-${card.type}`}>
-                        {card.type}:
+                      <strong className={`card-type-${card.group}`}>
+                        {card.group}:
                       </strong>{" "}
-                      {card.move}
+                      {"move" in card ? card.move : card.type}
                     </li>
                   );
                 })}
               </ul>
               <ul>
-                {player.potentialJesterMoves.map((move, i) => {
-                  return <li key={i}>Jester can move to: {move.to}</li>;
+                {player.possibleMoves.map((move, i) => {
+                  return (
+                    <li key={i}>
+                      {move.piece} can move to: {move.to}
+                    </li>
+                  );
                 })}
               </ul>
               <hr />

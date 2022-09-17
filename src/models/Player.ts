@@ -1,6 +1,7 @@
 import { clamp, groupBy, maxBy, partition, sortBy, sumBy } from "lodash";
-import { Card, Deck } from "./Deck";
+import { Card } from "./cards";
 import type { Game } from "./Game";
+import { moves } from "./moves";
 
 type PlayerColor = "red" | "blue";
 
@@ -11,7 +12,7 @@ export class Player {
   cards: Card[] = [];
   game: Game;
 
-  constructor(game, color: PlayerColor) {
+  constructor(game: Game, color: PlayerColor) {
     this.game = game;
     this.color = color;
   }
@@ -23,42 +24,13 @@ export class Player {
       this.cards.push(...this.game.deck.draw(cardsToDraw));
     }
 
-    this.cards = sortBy(this.cards, (card) => `${card.type}${card.move}`);
+    this.cards = sortBy(this.cards, (card) => card.type);
   }
 
-  get potentialJesterMoves() {
-    const cards = this.cards.filter((card) => card.type === "jester");
-    let [middle, move] = partition(
-      cards,
-      (card) => card.move === "move-middle"
-    );
-
-    let to = this.game.pieces.jester;
-    const useMiddle =
-      middle[0] &&
-      ((this.direction === -1 && to > 0) || (this.direction === 1 && to < 0));
-
-    // TODO: Document
-    if (useMiddle) {
-      to = 0;
-      middle = [middle[0]]; // Only use 1
-    } else {
-      middle = [];
-    }
-
-    console.log({ middle });
-
-    // TODO: Fix the need to cast
-    to += sumBy(move, (card) => (card.move as number) * this.direction);
-
-    return [
-      {
-        type: "move",
-        // TODO: This will lead to illegal moves
-        to: clamp(to, -8, 8),
-        cards: [...middle, ...move],
-      },
-    ];
+  get possibleMoves() {
+    return Object.values(moves).flatMap((getMoves) => {
+      return getMoves(this);
+    });
   }
 
   get direction() {
@@ -67,10 +39,9 @@ export class Player {
 
   playTurn() {
     // TODO: Tidy
-    const [{ to, cards }] = this.potentialJesterMoves;
-
-    this.game.pieces.jester = to;
-    this.playCards(cards);
+    // const [{ to, cards }] = this.potentialJesterMoves;
+    // this.game.pieces.jester = to;
+    // this.playCards(cards);
   }
 
   playCards(cards: Card[]) {
