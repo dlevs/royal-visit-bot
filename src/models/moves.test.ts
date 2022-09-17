@@ -14,18 +14,6 @@ describe("tryToGetTo()", () => {
     });
   });
 
-  test("handles negative direction", () => {
-    expect(tryToGetTo(1, -2, [{ move: 1 }])).toMatchObject({
-      to: 0,
-      cardsUsed: [{ move: 1 }],
-    });
-
-    expect(tryToGetTo(0, -8, [{ move: 4 }, { move: 3 }])).toMatchObject({
-      to: -7,
-      cardsUsed: [{ move: 3 }, { move: 4 }],
-    });
-  });
-
   test("uses the most cards possible to get as close as possible", () => {
     expect(
       tryToGetTo(0, 5, [
@@ -85,7 +73,7 @@ describe("tryToGetTo()", () => {
     });
 
     expect(
-      tryToGetTo(0, -8, [
+      tryToGetTo(0, 8, [
         // Use these:
         { move: 1 },
         { move: 2 },
@@ -95,12 +83,12 @@ describe("tryToGetTo()", () => {
         { move: 5 },
       ])
     ).toMatchObject({
-      to: -8,
+      to: 8,
       cardsUsed: [{ move: 1 }, { move: 2 }, { move: 5 }],
     });
 
     expect(
-      tryToGetTo(0, -7, [
+      tryToGetTo(0, 7, [
         // Use these
         { move: 1 },
         { move: 4 },
@@ -108,7 +96,7 @@ describe("tryToGetTo()", () => {
         { move: 4 },
       ])
     ).toMatchObject({
-      to: -5,
+      to: 5,
       cardsUsed: [{ move: 1 }, { move: 4 }],
     });
   });

@@ -32,25 +32,24 @@ export class Player {
   }
 
   get possibleMoves() {
-    return Object.values(moves)
-      .flatMap((getMoves) => {
-        return getMoves(this);
-      })
-      .filter((move) => move.to !== this.game.pieces[move.piece]);
-  }
+    const possibleMoves = Object.values(moves).flatMap((getMoves) => {
+      return getMoves(this);
+    });
 
-  get direction() {
-    return this.color === "blue" ? -1 : 1;
+    console.log({ possibleMoves });
+
+    return possibleMoves.filter(
+      (move) => move.to !== this.game.pieces[move.piece]
+    );
   }
 
   playTurn(option: number) {
-    // TODO: Tidy
     const { to, piece, cardsUsed } = this.possibleMoves[option];
     this.game.pieces[piece] = to;
-    this.playCards(cardsUsed);
+    this.discardCards(cardsUsed);
   }
 
-  playCards(cards: Card[]) {
+  discardCards(cards: Card[]) {
     this.cards = this.cards.filter((card) => {
       return !cards.includes(card);
     });

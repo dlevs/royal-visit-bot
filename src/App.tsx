@@ -11,30 +11,38 @@ function App() {
   return (
     <div className="App">
       <div className="board">
-        {range(-8, 9).map((pos) => {
-          const side = pos === 0 ? "middle" : pos < 0 ? "blue" : "red";
-          const chateauClass = pos < -6 || pos > 6 ? "board-tile-chateau" : "";
+        {range(-8, 9).map((position) => {
+          const side =
+            position === 0 ? "middle" : position < 0 ? "blue" : "red";
+          const chateauClass =
+            position < -6 || position > 6 ? "board-tile-chateau" : "";
 
           return (
             <div
-              key={pos}
+              key={position}
               className={`board-tile board-tile-${side} ${chateauClass}`}
             >
               <div className="piece-space">
-                <div>{pos}</div>
-                {pos === game.pieces.guard1 && (
-                  <div className="piece piece-guard" />
+                <div>{position}</div>
+                {position === game.pieces.guard1 && (
+                  <>
+                    <div className="piece piece-guard" />
+                    guard1
+                  </>
                 )}
-                {pos === game.pieces.guard2 && (
-                  <div className="piece piece-guard" />
+                {position === game.pieces.guard2 && (
+                  <>
+                    <div className="piece piece-guard" />
+                    guard2
+                  </>
                 )}
-                {pos === game.pieces.jester && (
+                {position === game.pieces.jester && (
                   <div className="piece piece-jester" />
                 )}
-                {pos === game.pieces.king && (
+                {position === game.pieces.king && (
                   <div className="piece piece-king" />
                 )}
-                {pos === game.pieces.wizard && (
+                {position === game.pieces.wizard && (
                   <div className="piece piece-wizard" />
                 )}
               </div>

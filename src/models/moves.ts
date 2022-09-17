@@ -18,16 +18,13 @@ export const moves: Record<string, MoveCalcFunction> = {
     const moveCards = filterMoveCards(player.cards, "jester-move");
 
     let from = player.game.pieces.jester;
-    const useMiddle =
-      middleCard &&
-      ((player.direction === -1 && from > 0) ||
-        (player.direction === 1 && from < 0));
+    const useMiddle = middleCard && from < 0;
 
     if (useMiddle) {
       from = 0;
     }
 
-    const { to, cardsUsed } = tryToGetTo(from, player.direction * 8, moveCards);
+    const { to, cardsUsed } = tryToGetTo(from, 8, moveCards);
 
     return {
       piece: "jester",
@@ -40,18 +37,22 @@ export const moves: Record<string, MoveCalcFunction> = {
 
     return {
       piece: "wizard",
-      ...tryToGetTo(player.game.pieces.wizard, player.direction * 8, moveCards),
+      ...tryToGetTo(player.game.pieces.wizard, 8, moveCards),
     };
   },
   // TODO: Flip the board internally each turn, so it's always trying to go from 0 to 8, positive values
-  // moveKing(player) {
-  //   const moveCards = filterMoveCards(player.cards, "wizard-move");
+  moveKing(player) {
+    const moveCards = filterMoveCards(player.cards, "king-move");
 
-  //   return {
-  //     piece: "wizard",
-  //     ...tryToGetTo(player.game.pieces.wizard, player.direction * 8, moveCards),
-  //   };
-  // },
+    return {
+      piece: "king",
+      ...tryToGetTo(
+        player.game.pieces.king,
+        player.game.pieces.guard1 - 1,
+        moveCards
+      ),
+    };
+  },
   movePiecesWithWizard(player) {
     const { wizard, ...others } = player.game.pieces;
 
@@ -65,10 +66,8 @@ export function tryToGetTo<
     move: number;
   }
 >(from: number, toTarget: number, cards: T[]) {
-  const direction = toTarget < from ? -1 : 1;
   const sortedCards = sortBy(cards, (card) => card.move);
-
-  const distance = Math.abs(toTarget - from);
+  const distance = toTarget - from;
   const movesUsed = maxSum(
     sortedCards.map((x) => x.move),
     distance
@@ -84,7 +83,7 @@ export function tryToGetTo<
   }
 
   return {
-    to: from + direction * sum(movesUsed),
+    to: from + sum(movesUsed),
     cardsUsed,
   };
 }
