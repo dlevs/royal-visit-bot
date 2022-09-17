@@ -23,8 +23,8 @@ export class Game {
     }
   }
 
-  playTurn() {
-    this.turnPlayer.playTurn();
+  playTurn(option: number) {
+    this.turnPlayer.playTurn(option);
     this.turnPlayer.draw();
     this.turnPlayer = this.players.find(
       (player) => player !== this.turnPlayer

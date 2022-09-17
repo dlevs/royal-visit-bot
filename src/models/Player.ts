@@ -27,21 +27,27 @@ export class Player {
     this.cards = sortBy(this.cards, (card) => card.type);
   }
 
+  get isPlaying() {
+    return this === this.game.turnPlayer;
+  }
+
   get possibleMoves() {
-    return Object.values(moves).flatMap((getMoves) => {
-      return getMoves(this);
-    });
+    return Object.values(moves)
+      .flatMap((getMoves) => {
+        return getMoves(this);
+      })
+      .filter((move) => move.to !== this.game.pieces[move.piece]);
   }
 
   get direction() {
     return this.color === "blue" ? -1 : 1;
   }
 
-  playTurn() {
+  playTurn(option: number) {
     // TODO: Tidy
-    // const [{ to, cards }] = this.potentialJesterMoves;
-    // this.game.pieces.jester = to;
-    // this.playCards(cards);
+    const { to, piece, cardsUsed } = this.possibleMoves[option];
+    this.game.pieces[piece] = to;
+    this.playCards(cardsUsed);
   }
 
   playCards(cards: Card[]) {

@@ -63,6 +63,21 @@ function App() {
               </ul>
               <ul>
                 {player.possibleMoves.map((move, i) => {
+                  if (player.isPlaying) {
+                    return (
+                      <li key={i}>
+                        <button
+                          onClick={() => {
+                            game.playTurn(i);
+                            setTurn((n) => n + 1);
+                          }}
+                        >
+                          {move.piece} can move to: {move.to}
+                        </button>
+                      </li>
+                    );
+                  }
+
                   return (
                     <li key={i}>
                       {move.piece} can move to: {move.to}
@@ -75,16 +90,6 @@ function App() {
           );
         })}
       </ul>
-
-      <button
-        type="button"
-        onClick={() => {
-          game.playTurn();
-          setTurn((n) => n + 1);
-        }}
-      >
-        Play turn
-      </button>
     </div>
   );
 }
