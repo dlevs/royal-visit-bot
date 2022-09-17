@@ -1,4 +1,4 @@
-import { clamp, partition, sumBy } from "lodash";
+import { clamp, partition, sortBy, sumBy } from "lodash";
 import { Card, filterMoveCards, getSingleJesterMiddleCard } from "./cards";
 import type { Game } from "./Game";
 import type { Player } from "./Player";
@@ -23,13 +23,11 @@ export const moves: Record<string, MoveCalcFunction> = {
       ((player.direction === -1 && to > 0) ||
         (player.direction === 1 && to < 0));
 
-    // TODO: Document
     if (useMiddle) {
       to = 0;
     }
 
-    // TODO: Fix the need to cast
-    to += sumBy(moveCards, (card) => (card.move as number) * player.direction);
+    to += sumBy(moveCards, (card) => card.move * player.direction);
 
     return {
       piece: "jester",
@@ -42,8 +40,7 @@ export const moves: Record<string, MoveCalcFunction> = {
     const moveCards = filterMoveCards(player.cards, "wizard-move");
     let to = player.game.pieces.wizard;
 
-    // TODO: Fix the need to cast
-    to += sumBy(moveCards, (card) => (card.move as number) * player.direction);
+    to += sumBy(moveCards, (card) => card.move * player.direction);
 
     return {
       piece: "wizard",
@@ -52,4 +49,40 @@ export const moves: Record<string, MoveCalcFunction> = {
       cards: moveCards,
     };
   },
+  movePiecesWithWizard(player) {
+    const { wizard, ...others } = player.game.pieces;
+
+    // const
+    return [];
+  },
 };
+
+export function tryToGetTo<
+  T extends {
+    move: number;
+  }
+>(from: number, toTarget: number, cards: T[]) {
+  const direction = toTarget < from ? -1 : 1;
+  const sortedCards = sortBy(cards, (card) => card.move);
+  const cardsUsed: T[] = [];
+
+  let to = from;
+
+  for (const card of sortedCards) {
+    const newTo = to + card.move * direction;
+    if (
+      (newTo < toTarget && direction === -1) ||
+      (newTo > toTarget && direction === 1)
+    ) {
+      break;
+    }
+
+    to = newTo;
+    cardsUsed.push(card);
+  }
+
+  return {
+    to,
+    cards: cardsUsed,
+  };
+}
