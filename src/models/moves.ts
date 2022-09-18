@@ -112,7 +112,7 @@ function expandMoves(
 				distance: piece.to - from,
 				...piece,
 			};
-		}).filter((piece) => piece.distance !== 0);
+		}).filter((piece) => piece.distance > 0);
 
 		const piecesNewPositions = { ...game.pieces };
 		for (const piece of piecesToMove) {
@@ -127,10 +127,25 @@ function expandMoves(
 	}).filter(isMoveValid);
 }
 
-function isMoveValid(move: PossibleTurn): boolean {
+function isMoveValid(move: PossibleTurnExpanded): boolean {
 	if (move.piecesToMove.length === 0) {
 		return false;
 	}
+
+	const { guard1, guard2, king } = move.piecesNewPositions;
+
+	if (king >= guard1) {
+		return false;
+	}
+	if (king <= guard2) {
+		return false;
+	}
+	// TODO: Validate anything else here? Like movement of king
+	// not past jester when using jester? Probably less confusing to
+	// have that in the specific move logic. Write when rules are
+	// enforced here vs in the individual rules. Maybe this should
+	// just be invariants that throw an error, and you must validate
+	// in each move to use the correct number of cards.
 
 	return true;
 }
