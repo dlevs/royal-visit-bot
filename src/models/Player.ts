@@ -1,7 +1,7 @@
 import { sortBy } from "lodash";
 import { Card } from "./cards";
 import type { Game } from "./Game";
-import { moves } from "./moves";
+import { getPossibleMoves } from "./moves";
 
 type PlayerColor = "red" | "blue";
 
@@ -32,30 +32,12 @@ export class Player {
 	}
 
 	get possibleMoves() {
-		const possibleMoves = Object.values(moves).map((getMoves) => {
-			return getMoves(this);
-		});
-
-		return possibleMoves.map((move) => {
-			return {
-				...move,
-				pieces: move.pieces.map((piece) => {
-					const from = this.game.pieces[piece.type];
-					return {
-						from,
-						distance: piece.to - from,
-						...piece,
-					};
-				}).filter((piece) => piece.distance > 0),
-			};
-		}).filter((move) => move.pieces.length !== 0);
+		return getPossibleMoves(this);
 	}
 
 	playTurn(option: number) {
-		const { pieces, cardsUsed } = this.possibleMoves[option];
-		for (const piece of pieces) {
-			this.game.pieces[piece.type] = piece.to;
-		}
+		const { piecesNewPositions, cardsUsed } = this.possibleMoves[option];
+		this.game.pieces = piecesNewPositions;
 		this.discardCards(cardsUsed);
 	}
 

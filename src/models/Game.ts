@@ -1,11 +1,17 @@
 import { Deck } from "./Deck";
 import { Player } from "./Player";
 
+// TODO: Move some types
+export type Piece = "guard1" | "guard2" | "wizard" | "king" | "jester";
+export type PiecePositions = {
+	[K in Piece]: number;
+};
+
 export class Game {
 	deck: Deck;
 	players: Player[];
 	turnPlayer: Player;
-	pieces = {
+	pieces: PiecePositions = {
 		guard1: 2,
 		wizard: 1,
 		king: 0,
@@ -34,7 +40,7 @@ export class Game {
 
 	flipBoard() {
 		const pieces = this.pieces;
-		const pieceKeys = Object.keys(pieces) as (keyof typeof pieces)[];
+		const pieceKeys = Object.keys(pieces) as Piece[];
 
 		for (const key of pieceKeys) {
 			pieces[key] = -pieces[key];

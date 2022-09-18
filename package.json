@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest --run",
+    "format": "rome format --write src",
+    "lint": "rome check src",
+    "lint:fix": "rome check --apply-suggested src",
+    "validate": "npm run lint && npm run test && npm run build",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

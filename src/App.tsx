@@ -1,12 +1,12 @@
 import { range } from "lodash";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { Game } from "./models/Game";
 
 const game = new Game();
 
 function App() {
-	const [turn, setTurn] = useState(0);
+	const [, setTurn] = useState(0);
 
 	return (
 		<div className="App">
@@ -46,7 +46,7 @@ function App() {
 									<div className="piece piece-wizard" />
 								)}
 							</div>
-							<div className="crown-space"></div>
+							<div className="crown-space" />
 						</div>
 					);
 				})}
@@ -81,7 +81,16 @@ function App() {
 														setTurn((n) => n + 1);
 													}}
 												>
-													{move.piece} can move to: {move.to}
+													{move.piecesToMove.map((piece) => {
+														return (
+															<p>
+																{piece.type} can move to: {piece.to}
+															</p>
+														);
+													})}
+													{move.cardsUsed.length === 0
+														? " (with wizard)"
+														: null}
 												</button>
 											</li>
 										);
@@ -89,7 +98,13 @@ function App() {
 
 									return (
 										<li key={i}>
-											{move.piece} can move to: {move.to}
+											{move.piecesToMove.map((piece) => {
+												return (
+													<p>
+														{piece.type} can move to: {piece.to}
+													</p>
+												);
+											})}
 										</li>
 									);
 								})}

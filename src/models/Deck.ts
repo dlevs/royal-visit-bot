@@ -33,7 +33,7 @@ export class Deck {
 		let i = n;
 		while (i--) {
 			let card = this.cards.pop();
-			if (!card && !this.finished) {
+			if (!(card || this.finished)) {
 				this.shuffle();
 				card = this.cards.pop();
 			}

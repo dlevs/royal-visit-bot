@@ -1,0 +1,12 @@
+{
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  }
+}
