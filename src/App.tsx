@@ -24,25 +24,25 @@ function App() {
 						>
 							<div className="piece-space">
 								<div>{position}</div>
-								{position === game.pieces.guard1 && (
+								{position === game.piecesNormalisedForDisplay.guard1 && (
 									<>
 										<div className="piece piece-guard" />
 										guard1
 									</>
 								)}
-								{position === game.pieces.guard2 && (
+								{position === game.piecesNormalisedForDisplay.guard2 && (
 									<>
 										<div className="piece piece-guard" />
 										guard2
 									</>
 								)}
-								{position === game.pieces.jester && (
+								{position === game.piecesNormalisedForDisplay.jester && (
 									<div className="piece piece-jester" />
 								)}
-								{position === game.pieces.king && (
+								{position === game.piecesNormalisedForDisplay.king && (
 									<div className="piece piece-king" />
 								)}
-								{position === game.pieces.wizard && (
+								{position === game.piecesNormalisedForDisplay.wizard && (
 									<div className="piece piece-wizard" />
 								)}
 							</div>
@@ -52,10 +52,15 @@ function App() {
 				})}
 			</div>
 			<div>Deck: ({game.deck.cards.length})</div>
-			<ul>
-				{game.players.map((player) => {
+			<ul
+				style={{
+					display: "flex",
+					width: "100%",
+				}}
+			>
+				{[...game.players].reverse().map((player) => {
 					return (
-						<li key={player.color}>
+						<li key={player.color} style={{ flex: 1 }}>
 							Player {player.color}
 							<ul>
 								{player.cards.map((card, i) => {

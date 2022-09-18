@@ -1,5 +1,10 @@
 import { sortBy, sum } from "lodash";
-import { Card, filterMoveCards, getSingleJesterMiddleCard } from "./cards";
+import {
+	Card,
+	filterMoveCards,
+	getSingleGuardsFlankKingCard,
+	getSingleJesterMiddleCard,
+} from "./cards";
 import type { Game, PiecePositions } from "./Game";
 import type { Player } from "./Player";
 import { isTruthy } from "./util";
@@ -53,7 +58,7 @@ const moves: Record<string, MoveCalcFunction> = {
 
 		return {
 			piecesToMove: [{ type: "jester", to }],
-			cardsUsed: [middleCard, ...cardsUsed].filter(isTruthy),
+			cardsUsed: [useMiddle && middleCard, ...cardsUsed].filter(isTruthy),
 		};
 	},
 	moveWizard(player) {
@@ -81,6 +86,42 @@ const moves: Record<string, MoveCalcFunction> = {
 		return {
 			piecesToMove: [{ type: "king", to }],
 			cardsUsed,
+		};
+	},
+	moveGuards(player) {
+		const guardFlankCard = getSingleGuardsFlankKingCard(player.cards);
+		const moveCards = filterMoveCards(player.cards, "guard-move");
+
+		let { guard1, guard2, king } = player.game.pieces;
+
+		// TODO: Put in flanking logic
+		const useFlank = guardFlankCard;
+
+		if (useFlank) {
+			guard1 = king + 1;
+			guard2 = king - 1;
+		}
+
+		// TODO: It's possible to split the 2 cards into 2x1
+		// TODO: Generate both moving guard1, and guard2 as preference,
+		// and pick one that scores best? Or is playing defensive normally better?
+		const guard2Move = tryToGetTo(guard2, king - 1, moveCards);
+		const guard1Move = tryToGetTo(
+			guard1,
+			8,
+			moveCards.filter((card) => !guard2Move.cardsUsed.includes(card)),
+		);
+
+		return {
+			piecesToMove: [
+				{ type: "guard1", to: guard1Move.to },
+				{ type: "guard2", to: guard2Move.to },
+			],
+			cardsUsed: [
+				useFlank && guardFlankCard,
+				...guard1Move.cardsUsed,
+				...guard2Move.cardsUsed,
+			].filter(isTruthy),
 		};
 	},
 	movePiecesWithWizard(player) {

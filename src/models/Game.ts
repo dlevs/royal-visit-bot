@@ -29,6 +29,15 @@ export class Game {
 		}
 	}
 
+	// TODO: Document. And probably do this the other way around -
+	// special getter for the calculations, not display?
+	get piecesNormalisedForDisplay() {
+		if (this.turnPlayer.color === "blue") {
+			return this.flipBoard({ ...this.pieces });
+		}
+		return this.pieces;
+	}
+
 	playTurn(option: number) {
 		this.turnPlayer.playTurn(option);
 		this.turnPlayer.draw();
@@ -38,8 +47,7 @@ export class Game {
 		this.flipBoard();
 	}
 
-	flipBoard() {
-		const pieces = this.pieces;
+	flipBoard(pieces = this.pieces) {
 		const pieceKeys = Object.keys(pieces) as Piece[];
 
 		for (const key of pieceKeys) {
@@ -51,5 +59,7 @@ export class Game {
 
 		pieces.guard1 = guard2;
 		pieces.guard2 = guard1;
+
+		return pieces;
 	}
 }
