@@ -1,1 +1,1 @@
-# royal-visit-bot
+# Tug of War Game
