@@ -30,7 +30,11 @@ export function getPossibleMoves(player: Player): PossibleTurnExpanded[] {
 		return getMoves(player);
 	});
 
-	return expandMoves(player.game, possibleMoves).filter(isMoveValid);
+	const expandedMoves = expandMoves(player.game, possibleMoves);
+
+	expandedMoves.forEach(validateMove);
+
+	return expandedMoves;
 }
 
 const moves: Record<string, MoveCalcFunction> = {
@@ -95,8 +99,9 @@ const moves: Record<string, MoveCalcFunction> = {
 			});
 		}
 
-		// TODO: Enforce that king cannot move beyond guard, etc, elsewhere
-		return output;
+		return expandMoves(player.game, output).filter(
+			(move) => arePositionsValid(move.piecesNewPositions),
+		);
 	},
 };
 
@@ -104,7 +109,7 @@ function expandMoves(
 	game: Game,
 	moves: PossibleTurn[],
 ): PossibleTurnExpanded[] {
-	return moves.map((move) => {
+	const expandedMoves = moves.map((move) => {
 		const piecesToMove = move.piecesToMove.map((piece) => {
 			const from = game.pieces[piece.type];
 			return {
@@ -124,15 +129,15 @@ function expandMoves(
 			piecesToMove,
 			piecesNewPositions,
 		};
-	}).filter(isMoveValid);
+	}).filter((move) => {
+		return move.piecesToMove.length !== 0;
+	});
+
+	return expandedMoves;
 }
 
-function isMoveValid(move: PossibleTurnExpanded): boolean {
-	if (move.piecesToMove.length === 0) {
-		return false;
-	}
-
-	const { guard1, guard2, king } = move.piecesNewPositions;
+function arePositionsValid(positions: PiecePositions): boolean {
+	const { guard1, guard2, king } = positions;
 
 	if (king >= guard1) {
 		return false;
@@ -140,14 +145,15 @@ function isMoveValid(move: PossibleTurnExpanded): boolean {
 	if (king <= guard2) {
 		return false;
 	}
-	// TODO: Validate anything else here? Like movement of king
-	// not past jester when using jester? Probably less confusing to
-	// have that in the specific move logic. Write when rules are
-	// enforced here vs in the individual rules. Maybe this should
-	// just be invariants that throw an error, and you must validate
-	// in each move to use the correct number of cards.
 
 	return true;
+}
+
+function validateMove(move: PossibleTurnExpanded) {
+	if (!arePositionsValid(move.piecesNewPositions)) {
+		console.error("Invalid move", move);
+		throw new Error("Calculated invalid move");
+	}
 }
 
 export function tryToGetTo<
