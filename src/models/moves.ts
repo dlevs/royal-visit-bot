@@ -4,11 +4,13 @@ import type { Game } from "./Game";
 import type { Player } from "./Player";
 import { isTruthy } from "./util";
 
-type MoveCalcFunction = (player: Player) => PossibleTurn | PossibleTurn[];
+type MoveCalcFunction = (player: Player) => PossibleTurn;
 
 type PossibleTurn = {
-  piece: keyof Game["pieces"];
-  to: number;
+  pieces: {
+    type: keyof Game["pieces"];
+    to: number;
+  }[];
   cardsUsed: Card[];
 };
 
@@ -27,17 +29,21 @@ export const moves: Record<string, MoveCalcFunction> = {
     const { to, cardsUsed } = tryToGetTo(from, 8, moveCards);
 
     return {
-      piece: "jester",
-      to,
+      pieces: [{ type: "jester", to }],
       cardsUsed: [middleCard, ...cardsUsed].filter(isTruthy),
     };
   },
   moveWizard(player) {
     const moveCards = filterMoveCards(player.cards, "wizard-move");
+    const { to, cardsUsed } = tryToGetTo(
+      player.game.pieces.wizard,
+      8,
+      moveCards
+    );
 
     return {
-      piece: "wizard",
-      ...tryToGetTo(player.game.pieces.wizard, 8, moveCards),
+      pieces: [{ type: "wizard", to }],
+      cardsUsed,
     };
   },
   // TODO: Flip the board internally each turn, so it's always trying to go from 0 to 8, positive values

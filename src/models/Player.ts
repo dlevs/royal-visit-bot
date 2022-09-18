@@ -1,4 +1,4 @@
-import { clamp, groupBy, maxBy, partition, sortBy, sumBy } from "lodash";
+import { sortBy } from "lodash";
 import { Card } from "./cards";
 import type { Game } from "./Game";
 import { moves } from "./moves";
@@ -32,20 +32,34 @@ export class Player {
   }
 
   get possibleMoves() {
-    const possibleMoves = Object.values(moves).flatMap((getMoves) => {
+    const possibleMoves = Object.values(moves).map((getMoves) => {
       return getMoves(this);
     });
 
-    console.log({ possibleMoves });
-
-    return possibleMoves.filter(
-      (move) => move.to !== this.game.pieces[move.piece]
-    );
+    return possibleMoves
+      .map((move) => {
+        return {
+          ...move,
+          pieces: move.pieces
+            .map((piece) => {
+              const from = this.game.pieces[piece.type];
+              return {
+                from,
+                distance: piece.to - from,
+                ...piece,
+              };
+            })
+            .filter((piece) => piece.distance > 0),
+        };
+      })
+      .filter((move) => move.pieces.length !== 0);
   }
 
   playTurn(option: number) {
-    const { to, piece, cardsUsed } = this.possibleMoves[option];
-    this.game.pieces[piece] = to;
+    const { pieces, cardsUsed } = this.possibleMoves[option];
+    for (const piece of pieces) {
+      this.game.pieces[piece.type] = piece.to;
+    }
     this.discardCards(cardsUsed);
   }
 

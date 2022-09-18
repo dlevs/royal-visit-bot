@@ -116,7 +116,7 @@ export function getSingleGuardsFlankKingCard(cards: Card[]) {
       return card.type === "guards-flank-king";
     }) ?? null;
 
-  return card as null | JesterMovementCard;
+  return card as null | GuardFlankCard;
 }
 
 export type Card =
