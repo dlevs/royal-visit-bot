@@ -2,7 +2,7 @@ import { sortBy, sum } from "lodash";
 import {
 	Card,
 	filterMoveCards,
-	getSingleGuardsFlankKingCard,
+	getSingleGuardsFlankQueenCard,
 	getSingleJesterMiddleCard,
 } from "./cards";
 import type { Game, PiecePositions } from "./Game";
@@ -61,51 +61,51 @@ const moves: Record<string, MoveCalcFunction> = {
 			cardsUsed: [useMiddle && middleCard, ...cardsUsed].filter(isTruthy),
 		};
 	},
-	moveWizard(player) {
-		const moveCards = filterMoveCards(player.cards, "wizard-move");
+	moveWitch(player) {
+		const moveCards = filterMoveCards(player.cards, "witch-move");
 		const { to, cardsUsed } = tryToGetTo(
-			player.game.pieces.wizard,
+			player.game.pieces.witch,
 			8,
 			moveCards,
 		);
 
 		return {
-			piecesToMove: [{ type: "wizard", to }],
+			piecesToMove: [{ type: "witch", to }],
 			cardsUsed,
 		};
 	},
 	// TODO: Flip the board internally each turn, so it's always trying to go from 0 to 8, positive values
-	moveKing(player) {
-		const moveCards = filterMoveCards(player.cards, "king-move");
+	moveQueen(player) {
+		const moveCards = filterMoveCards(player.cards, "queen-move");
 		const { to, cardsUsed } = tryToGetTo(
-			player.game.pieces.king,
+			player.game.pieces.queen,
 			player.game.pieces.guard1 - 1,
 			moveCards,
 		);
 
 		return {
-			piecesToMove: [{ type: "king", to }],
+			piecesToMove: [{ type: "queen", to }],
 			cardsUsed,
 		};
 	},
 	moveGuards(player) {
-		const guardFlankCard = getSingleGuardsFlankKingCard(player.cards);
+		const guardFlankCard = getSingleGuardsFlankQueenCard(player.cards);
 		const moveCards = filterMoveCards(player.cards, "guard-move");
 
-		let { guard1, guard2, king } = player.game.pieces;
+		let { guard1, guard2, queen } = player.game.pieces;
 
-		// TODO: Put in flanking logic
+		// TODO: Put in flanqueen logic
 		const useFlank = guardFlankCard;
 
 		if (useFlank) {
-			guard1 = king + 1;
-			guard2 = king - 1;
+			guard1 = queen + 1;
+			guard2 = queen - 1;
 		}
 
 		// TODO: It's possible to split the 2 cards into 2x1
 		// TODO: Generate both moving guard1, and guard2 as preference,
 		// and pick one that scores best? Or is playing defensive normally better?
-		const guard2Move = tryToGetTo(guard2, king - 1, moveCards);
+		const guard2Move = tryToGetTo(guard2, queen - 1, moveCards);
 		const guard1Move = tryToGetTo(
 			guard1,
 			8,
@@ -124,16 +124,16 @@ const moves: Record<string, MoveCalcFunction> = {
 			].filter(isTruthy),
 		};
 	},
-	movePiecesWithWizard(player) {
-		const { wizard } = player.game.pieces;
+	movePiecesWithWitch(player) {
+		const { witch } = player.game.pieces;
 		const output: PossibleTurn[] = [];
 
-		for (const key of ["guard1", "guard2", "king"] as const) {
+		for (const key of ["guard1", "guard2", "queen"] as const) {
 			output.push({
 				piecesToMove: [
 					{
 						type: key,
-						to: wizard,
+						to: witch,
 					},
 				],
 				cardsUsed: [],
@@ -178,12 +178,12 @@ function expandMoves(
 }
 
 function arePositionsValid(positions: PiecePositions): boolean {
-	const { guard1, guard2, king } = positions;
+	const { guard1, guard2, queen } = positions;
 
-	if (king >= guard1) {
+	if (queen >= guard1) {
 		return false;
 	}
-	if (king <= guard2) {
+	if (queen <= guard2) {
 		return false;
 	}
 

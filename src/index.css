@@ -14,9 +14,9 @@
   -webkit-text-size-adjust: 100%;
 
   --color-guard: #807877;
-  --color-king: #c2000c;
-  --color-wizard: #ff7e00;
-  --color-jester: #00dcfa;
+  --color-queen: #c2000c;
+  --color-witch: #00dcfa;
+  --color-jester: #ff7e00;
 }
 
 a {

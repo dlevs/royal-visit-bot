@@ -23,30 +23,31 @@ function App() {
 							className={`board-tile board-tile-${side} ${chateauClass}`}
 						>
 							<div className="piece-space">
-								<div>{position}</div>
 								{position === game.piecesNormalisedForDisplay.guard1 && (
 									<>
-										<div className="piece piece-guard" />
-										guard1
+										<img src="/guard1.png" className="piece-img piece-img-guard" alt="Guard game piece" title="Guard 1" />
 									</>
 								)}
 								{position === game.piecesNormalisedForDisplay.guard2 && (
 									<>
-										<div className="piece piece-guard" />
-										guard2
+										<img src="/guard2.png" className="piece-img piece-img-guard" alt="Guard game piece" title="Guard 2" />
 									</>
 								)}
 								{position === game.piecesNormalisedForDisplay.jester && (
-									<div className="piece piece-jester" />
+									<img src="/jester.png" className="piece-img piece-img-jester" alt="Jester game piece" title="Jester" />
 								)}
-								{position === game.piecesNormalisedForDisplay.king && (
-									<div className="piece piece-king" />
+								{position === game.piecesNormalisedForDisplay.queen && (
+									<img src="/queen.png" className="piece-img piece-img-queen" alt="Queen game piece" title="Queen" />
 								)}
-								{position === game.piecesNormalisedForDisplay.wizard && (
-									<div className="piece piece-wizard" />
+								{position === game.piecesNormalisedForDisplay.witch && (
+									<img src="/witch.png" className="piece-img piece-img-witch" alt="Witch game piece" title="Witch" />
 								)}
 							</div>
-							<div className="crown-space" />
+							<div className="crown-space">
+								{position === 0 && (
+									<img src="/crown.png" className="piece-img" alt="Crown game piece" title="Crown" />
+								)}
+							</div>
 						</div>
 					);
 				})}
@@ -94,7 +95,7 @@ function App() {
 														);
 													})}
 													{move.cardsUsed.length === 0
-														? " (with wizard)"
+														? " (with witch)"
 														: null}
 												</button>
 											</li>

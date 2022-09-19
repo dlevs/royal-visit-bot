@@ -2,7 +2,7 @@ import { Deck } from "./Deck";
 import { Player } from "./Player";
 
 // TODO: Move some types
-export type Piece = "guard1" | "guard2" | "wizard" | "king" | "jester";
+export type Piece = "guard1" | "guard2" | "witch" | "queen" | "jester";
 export type PiecePositions = {
 	[K in Piece]: number;
 };
@@ -13,8 +13,8 @@ export class Game {
 	turnPlayer: Player;
 	pieces: PiecePositions = {
 		guard1: 2,
-		wizard: 1,
-		king: 0,
+		witch: 1,
+		queen: 0,
 		jester: -1,
 		guard2: -2,
 	};

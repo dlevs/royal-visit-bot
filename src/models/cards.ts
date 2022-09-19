@@ -14,30 +14,30 @@ const cardDefinitions: CardDefinition[] = [
 	{
 		qty: 2,
 		group: "guard",
-		type: "guards-flank-king",
+		type: "guards-flank-queen",
 	},
 	{
 		qty: 12,
-		group: "king",
-		type: "king-move",
+		group: "queen",
+		type: "queen-move",
 		move: 1,
 	},
 	{
 		qty: 2,
-		group: "wizard",
-		type: "wizard-move",
+		group: "witch",
+		type: "witch-move",
 		move: 1,
 	},
 	{
 		qty: 8,
-		group: "wizard",
-		type: "wizard-move",
+		group: "witch",
+		type: "witch-move",
 		move: 2,
 	},
 	{
 		qty: 2,
-		group: "wizard",
-		type: "wizard-move",
+		group: "witch",
+		type: "witch-move",
 		move: 3,
 	},
 	{
@@ -92,7 +92,7 @@ export const allCards = Object.freeze(
 );
 
 export function filterMoveCards<
-	T extends "guard-move" | "king-move" | "jester-move" | "wizard-move",
+	T extends "guard-move" | "queen-move" | "jester-move" | "witch-move",
 >(cards: Card[], type: T) {
 	const filtered = cards.filter((card) => {
 		return card.type === type;
@@ -110,10 +110,10 @@ export function getSingleJesterMiddleCard(cards: Card[]) {
 	return card as null | JesterMovementCard;
 }
 
-export function getSingleGuardsFlankKingCard(cards: Card[]) {
+export function getSingleGuardsFlankQueenCard(cards: Card[]) {
 	const card =
 		cards.find((card) => {
-			return card.type === "guards-flank-king";
+			return card.type === "guards-flank-queen";
 		}) ?? null;
 
 	return card as null | GuardFlankCard;
@@ -122,8 +122,8 @@ export function getSingleGuardsFlankKingCard(cards: Card[]) {
 export type Card =
 	| GuardMovementCard
 	| GuardFlankCard
-	| KingMovementCard
-	| WizardMovementCard
+	| QueenMovementCard
+	| WitchMovementCard
 	| JesterMovementCard
 	| JesterMiddleCard;
 
@@ -137,18 +137,18 @@ interface GuardMovementCard {
 
 interface GuardFlankCard {
 	group: "guard";
-	type: "guards-flank-king";
+	type: "guards-flank-queen";
 }
 
-interface KingMovementCard {
-	group: "king";
-	type: "king-move";
+interface QueenMovementCard {
+	group: "queen";
+	type: "queen-move";
 	move: number;
 }
 
-interface WizardMovementCard {
-	group: "wizard";
-	type: "wizard-move";
+interface WitchMovementCard {
+	group: "witch";
+	type: "witch-move";
 	move: number;
 }
 
