@@ -70,6 +70,11 @@
   text-align: center;
 }
 
+.flip {
+  -webkit-transform: scaleX(-1);
+  filter: scaleX(-1);
+}
+
 .piece-img {
   display: block;
   position: absolute;

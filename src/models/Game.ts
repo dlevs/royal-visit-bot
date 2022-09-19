@@ -1,3 +1,4 @@
+import { clamp } from "lodash";
 import { Deck } from "./Deck";
 import { Player } from "./Player";
 
@@ -11,6 +12,7 @@ export class Game {
 	deck: Deck;
 	players: Player[];
 	turnPlayer: Player;
+	crownPosition: number;
 	pieces: PiecePositions = {
 		guard1: 2,
 		witch: 1,
@@ -23,6 +25,7 @@ export class Game {
 		this.deck = new Deck(this);
 		this.players = [new Player(this, "red"), new Player(this, "blue")];
 		this.turnPlayer = this.players[0];
+		this.crownPosition = 0;
 
 		for (const player of this.players) {
 			player.draw();
@@ -45,6 +48,20 @@ export class Game {
 			(player) => player !== this.turnPlayer,
 		)!;
 		this.flipBoard();
+		this.score();
+	}
+
+	score() {
+		// TODO: This `piecesNormalisedForDisplay` is named badly
+		for (const position of Object.values(this.piecesNormalisedForDisplay)) {
+			if (position > 6) {
+				this.crownPosition++;
+			} else if (position < -6) {
+				this.crownPosition--;
+			}
+		}
+
+		this.crownPosition = clamp(this.crownPosition, -8, 8);
 	}
 
 	flipBoard(pieces = this.pieces) {
