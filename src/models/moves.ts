@@ -253,6 +253,7 @@ export function moveUsingCards<
 /**
  * Get the highest sum possible whilst still being under a
  * given limit.
+ *
  * https://stackoverflow.com/a/47908354
  */
 function maxSum(input: number[], limit: number) {
