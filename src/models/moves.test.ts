@@ -1,17 +1,17 @@
 import { describe, expect, test } from "vitest";
 import { Card } from "./cards";
 import { Game, PiecePositions } from "./Game";
-import { tryToGetTo, moves, expandMove, PossibleTurn } from "./moves";
+import { moveUsingCards, moves, expandMove, PossibleTurn } from "./moves";
 import { Player } from "./Player";
 
-describe("tryToGetTo()", () => {
+describe("useCardsToMove()", () => {
 	test("handles simple cases", () => {
-		expect(tryToGetTo(1, 2, [{ move: 1 }])).toMatchObject({
+		expect(moveUsingCards(1, 2, [{ move: 1 }])).toMatchObject({
 			to: 2,
 			cardsUsed: [{ move: 1 }],
 		});
 
-		expect(tryToGetTo(0, 8, [{ move: 4 }, { move: 3 }])).toMatchObject({
+		expect(moveUsingCards(0, 8, [{ move: 4 }, { move: 3 }])).toMatchObject({
 			to: 7,
 			cardsUsed: [{ move: 3 }, { move: 4 }],
 		});
@@ -19,7 +19,7 @@ describe("tryToGetTo()", () => {
 
 	test("uses the most cards possible to get as close as possible", () => {
 		expect(
-			tryToGetTo(0, 5, [
+			moveUsingCards(0, 5, [
 				// Use these...
 				{ move: 2 },
 				{ move: 3 },
@@ -33,7 +33,7 @@ describe("tryToGetTo()", () => {
 
 		// And in reverse, to be sure
 		expect(
-			tryToGetTo(0, 5, [
+			moveUsingCards(0, 5, [
 				// Don't use this...
 				{ move: 5 },
 				// ...use these:
@@ -47,7 +47,7 @@ describe("tryToGetTo()", () => {
 			});
 
 		expect(
-			tryToGetTo(0, 5, [
+			moveUsingCards(0, 5, [
 				// Ignore this:
 				{ move: 1 },
 				// Use these:
@@ -62,7 +62,7 @@ describe("tryToGetTo()", () => {
 		});
 
 		expect(
-			tryToGetTo(0, 8, [
+			moveUsingCards(0, 8, [
 				// Use this:
 				{ move: 4 },
 				// Ignore this:
@@ -77,7 +77,7 @@ describe("tryToGetTo()", () => {
 		});
 
 		expect(
-			tryToGetTo(0, 8, [
+			moveUsingCards(0, 8, [
 				// Use these:
 				{ move: 1 },
 				{ move: 2 },
@@ -92,7 +92,7 @@ describe("tryToGetTo()", () => {
 		});
 
 		expect(
-			tryToGetTo(0, 7, [
+			moveUsingCards(0, 7, [
 				// Use these
 				{ move: 1 },
 				{ move: 4 },
@@ -106,6 +106,7 @@ describe("tryToGetTo()", () => {
 	});
 });
 
+// TODO: Test others, like wizard, guards and witch
 describe("moves", () => {
 	describe("moveQueen()", () => {
 		test("normal movement cards", () => {

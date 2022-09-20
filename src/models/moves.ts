@@ -52,7 +52,7 @@ export const moves = {
 			from = 0;
 		}
 
-		const { to, cardsUsed } = tryToGetTo(from, 8, moveCards);
+		const { to, cardsUsed } = moveUsingCards(from, 8, moveCards);
 
 		return {
 			piecesToMove: [{ type: "jester", to }],
@@ -61,7 +61,7 @@ export const moves = {
 	},
 	moveWitch(player: Player): PossibleTurn {
 		const moveCards = filterMoveCards(player.cards, "witch-move");
-		const { to, cardsUsed } = tryToGetTo(
+		const { to, cardsUsed } = moveUsingCards(
 			player.game.pieces.witch,
 			8,
 			moveCards,
@@ -72,13 +72,12 @@ export const moves = {
 			cardsUsed,
 		};
 	},
-	// TODO: Flip the board internally each turn, so it's always trying to go from 0 to 8, positive values
 	moveQueen(player: Player): PossibleTurn {
 		const moveCards = filterMoveCards(player.cards, "queen-move");
 
 		let guard1To = player.game.pieces.guard1;
 		let guard2To = player.game.pieces.guard2;
-		let { to: queenTo, cardsUsed } = tryToGetTo(
+		let { to: queenTo, cardsUsed } = moveUsingCards(
 			player.game.pieces.queen,
 			player.game.pieces.guard1 - 1,
 			moveCards,
@@ -130,8 +129,8 @@ export const moves = {
 		// TODO: It's possible to split the 2 cards into 2x1
 		// TODO: Generate both moving guard1, and guard2 as preference,
 		// and pick one that scores best? Or is playing defensive normally better?
-		const guard2Move = tryToGetTo(guard2, queen - 1, moveCards);
-		const guard1Move = tryToGetTo(
+		const guard2Move = moveUsingCards(guard2, queen - 1, moveCards);
+		const guard1Move = moveUsingCards(
 			guard1,
 			8,
 			moveCards.filter((card) => !guard2Move.cardsUsed.includes(card)),
@@ -227,7 +226,7 @@ function validateMove(move: PossibleTurnExpanded) {
 	}
 }
 
-export function tryToGetTo<
+export function moveUsingCards<
 	T extends {
 		move: number;
 	},
