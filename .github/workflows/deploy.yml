@@ -9,6 +9,8 @@ jobs:
   build-and-deploy:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
+
+    # TODO: Add tests
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
