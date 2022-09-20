@@ -26,7 +26,7 @@ function App() {
 								{position === game.piecesNormalisedForDisplay.guard1 && (
 									<>
 										<img
-											src="guard1.png"
+											src="/guard1.png"
 											className="piece-img piece-img-guard"
 											alt="Guard game piece"
 											title="Guard 1"
@@ -36,7 +36,7 @@ function App() {
 								{position === game.piecesNormalisedForDisplay.guard2 && (
 									<>
 										<img
-											src="guard2.png"
+											src="/guard2.png"
 											className="piece-img piece-img-guard"
 											alt="Guard game piece"
 											title="Guard 2"
@@ -45,7 +45,7 @@ function App() {
 								)}
 								{position === game.piecesNormalisedForDisplay.jester && (
 									<img
-										src="jester.png"
+										src="/jester.png"
 										className={`piece-img piece-img-jester ${
 											position > 0 && "flip"
 										}`}
@@ -55,7 +55,7 @@ function App() {
 								)}
 								{position === game.piecesNormalisedForDisplay.queen && (
 									<img
-										src="queen.png"
+										src="/queen.png"
 										className={`piece-img piece-img-queen ${
 											position > 0 && "flip"
 										}`}
@@ -65,7 +65,7 @@ function App() {
 								)}
 								{position === game.piecesNormalisedForDisplay.witch && (
 									<img
-										src="witch.png"
+										src="/witch.png"
 										className={`piece-img piece-img-witch ${
 											position < 0 && "flip"
 										}`}
@@ -77,7 +77,7 @@ function App() {
 							<div className="crown-space">
 								{position === game.crownPosition && (
 									<img
-										src="crown.png"
+										src="/crown.png"
 										className="piece-img"
 										alt="Crown game piece"
 										title="Crown"
