@@ -13,7 +13,9 @@ export class Game {
 	players: Player[];
 	turnPlayer: Player;
 	crownPosition: number;
-	pieces: PiecePositions = {
+	pieces: PiecePositions;
+
+	static DEFAULT_PIECE_POSITIONS: PiecePositions = {
 		guard1: 2,
 		witch: 1,
 		queen: 0,
@@ -21,11 +23,14 @@ export class Game {
 		guard2: -2,
 	};
 
-	constructor() {
+	constructor(pieces: Partial<PiecePositions> = Game.DEFAULT_PIECE_POSITIONS) {
 		this.deck = new Deck(this);
 		this.players = [new Player(this, "red"), new Player(this, "blue")];
 		this.turnPlayer = this.players[0];
 		this.crownPosition = 0;
+
+		// TODO: Validate this
+		this.pieces = { ...Game.DEFAULT_PIECE_POSITIONS, ...pieces };
 
 		for (const player of this.players) {
 			player.draw();

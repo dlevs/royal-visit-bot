@@ -1,19 +1,17 @@
-import { sortBy, sum } from "lodash";
+import { chunk, sortBy, sum } from "lodash";
 import {
 	Card,
 	filterMoveCards,
 	getSingleGuardsFlankQueenCard,
 	getSingleJesterMiddleCard,
 } from "./cards";
-import type { Game, PiecePositions } from "./Game";
+import type { Game, Piece, PiecePositions } from "./Game";
 import type { Player } from "./Player";
 import { isTruthy } from "./util";
 
-type MoveCalcFunction = (player: Player) => PossibleTurn | PossibleTurn[];
-
-type PossibleTurn = {
+export type PossibleTurn = {
 	piecesToMove: {
-		type: keyof Game["pieces"];
+		type: Piece;
 		to: number;
 	}[];
 	cardsUsed: Card[];
@@ -21,7 +19,7 @@ type PossibleTurn = {
 
 type PossibleTurnExpanded = {
 	piecesToMove: {
-		type: keyof Game["pieces"];
+		type: Piece;
 		from: number;
 		to: number;
 		distance: number;
@@ -42,8 +40,8 @@ export function getPossibleMoves(player: Player): PossibleTurnExpanded[] {
 	return expandedMoves;
 }
 
-const moves: Record<string, MoveCalcFunction> = {
-	moveJester(player) {
+export const moves = {
+	moveJester(player: Player): PossibleTurn {
 		const middleCard = getSingleJesterMiddleCard(player.cards);
 		const moveCards = filterMoveCards(player.cards, "jester-move");
 
@@ -61,7 +59,7 @@ const moves: Record<string, MoveCalcFunction> = {
 			cardsUsed: [useMiddle && middleCard, ...cardsUsed].filter(isTruthy),
 		};
 	},
-	moveWitch(player) {
+	moveWitch(player: Player): PossibleTurn {
 		const moveCards = filterMoveCards(player.cards, "witch-move");
 		const { to, cardsUsed } = tryToGetTo(
 			player.game.pieces.witch,
@@ -75,20 +73,47 @@ const moves: Record<string, MoveCalcFunction> = {
 		};
 	},
 	// TODO: Flip the board internally each turn, so it's always trying to go from 0 to 8, positive values
-	moveQueen(player) {
+	moveQueen(player: Player): PossibleTurn {
 		const moveCards = filterMoveCards(player.cards, "queen-move");
-		const { to, cardsUsed } = tryToGetTo(
+
+		let guard1To = player.game.pieces.guard1;
+		let guard2To = player.game.pieces.guard2;
+		let { to: queenTo, cardsUsed } = tryToGetTo(
 			player.game.pieces.queen,
 			player.game.pieces.guard1 - 1,
 			moveCards,
 		);
 
+		const cardsRemaining = moveCards.filter((card) => {
+			return !cardsUsed.includes(card);
+		});
+		const pairsRemaining = chunk(cardsRemaining, 2).filter(
+			(pair) => pair.length === 2,
+		);
+		// TODO: Tests
+
+		for (const pair of pairsRemaining) {
+			// Break if pieces already too far
+			if (guard1To === 8 || queenTo === 7 || guard2To === 6) {
+				break;
+			}
+
+			cardsUsed.push(...pair);
+			guard1To++;
+			queenTo++;
+			guard2To++;
+		}
+
 		return {
-			piecesToMove: [{ type: "queen", to }],
+			piecesToMove: [
+				{ type: "guard1", to: guard1To },
+				{ type: "queen", to: queenTo },
+				{ type: "guard2", to: guard2To },
+			],
 			cardsUsed,
 		};
 	},
-	moveGuards(player) {
+	moveGuards(player: Player): PossibleTurn {
 		const guardFlankCard = getSingleGuardsFlankQueenCard(player.cards);
 		const moveCards = filterMoveCards(player.cards, "guard-move");
 
@@ -124,7 +149,7 @@ const moves: Record<string, MoveCalcFunction> = {
 			].filter(isTruthy),
 		};
 	},
-	movePiecesWithWitch(player) {
+	movePiecesWithWitch(player: Player): PossibleTurn[] {
 		const { witch } = player.game.pieces;
 		const output: PossibleTurn[] = [];
 
@@ -150,31 +175,36 @@ function expandMoves(
 	game: Game,
 	moves: PossibleTurn[],
 ): PossibleTurnExpanded[] {
-	const expandedMoves = moves.map((move) => {
-		const piecesToMove = move.piecesToMove.map((piece) => {
-			const from = game.pieces[piece.type];
-			return {
-				from,
-				distance: piece.to - from,
-				...piece,
-			};
-		}).filter((piece) => piece.distance > 0);
+	return moves.map((move) => expandMove(game, move)).filter(isTruthy);
+}
 
-		const piecesNewPositions = { ...game.pieces };
-		for (const piece of piecesToMove) {
-			piecesNewPositions[piece.type] = piece.to;
-		}
-
+export function expandMove(
+	game: Game,
+	move: PossibleTurn,
+): null | PossibleTurnExpanded {
+	const piecesToMove = move.piecesToMove.map((piece) => {
+		const from = game.pieces[piece.type];
 		return {
-			...move,
-			piecesToMove,
-			piecesNewPositions,
+			from,
+			distance: piece.to - from,
+			...piece,
 		};
-	}).filter((move) => {
-		return move.piecesToMove.length !== 0;
-	});
+	}).filter((piece) => piece.distance > 0);
 
-	return expandedMoves;
+	if (piecesToMove.length === 0) {
+		return null;
+	}
+
+	const piecesNewPositions = { ...game.pieces };
+	for (const piece of piecesToMove) {
+		piecesNewPositions[piece.type] = piece.to;
+	}
+
+	return {
+		...move,
+		piecesToMove,
+		piecesNewPositions,
+	};
 }
 
 function arePositionsValid(positions: PiecePositions): boolean {
