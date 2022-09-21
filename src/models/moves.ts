@@ -206,7 +206,7 @@ export function expandMove(
 	};
 }
 
-function arePositionsValid(positions: PiecePositions): boolean {
+export function arePositionsValid(positions: PiecePositions): boolean {
 	const { guard1, guard2, queen } = positions;
 
 	if (queen >= guard1) {
