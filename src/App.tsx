@@ -1,7 +1,7 @@
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { groupBy, orderBy, range } from "lodash";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import "./App.css";
 import { Card } from "./models/cards";
 import { Game, Piece } from "./models/Game";
@@ -17,10 +17,12 @@ function GamePiece({ type }: { type: Piece }) {
 		},
 	);
 	const style = {
-		// Outputs `translate3d(x, y, 0)`
-		transform: CSS.Translate.toString(transform),
+		transform: CSS.Translate.toString(transform) ?? "translate3d(0, 0, 0)",
 		cursor: active ? "grabbing" : "grab",
+		touchAction: "none",
+		transition: active ? undefined : "transform 0.3s ease",
 	};
+	console.log(style);
 	// TODO: Put flipping back
 	return (
 		<img
@@ -54,7 +56,10 @@ function CardDisplay({ card }: { card: Card }) {
 	);
 }
 
-function GamePieceSpace({ position }: { position: number }) {
+function GamePieceSpace({ position, pieceNodes }: {
+	position: number;
+	pieceNodes: Record<Piece, ReactElement>;
+}) {
 	const { isOver, active, setNodeRef } = useDroppable({ id: position });
 	let background = "transparent";
 
@@ -76,21 +81,11 @@ function GamePieceSpace({ position }: { position: number }) {
 				background,
 			}}
 		>
-			{position === game.piecesNormalisedForDisplay.guard1 && (
-				<GamePiece type='guard1' />
-			)}
-			{position === game.piecesNormalisedForDisplay.guard2 && (
-				<GamePiece type='guard2' />
-			)}
-			{position === game.piecesNormalisedForDisplay.jester && (
-				<GamePiece type='jester' />
-			)}
-			{position === game.piecesNormalisedForDisplay.queen && (
-				<GamePiece type='queen' />
-			)}
-			{position === game.piecesNormalisedForDisplay.witch && (
-				<GamePiece type='witch' />
-			)}
+			{position === game.piecesNormalisedForDisplay.guard1 && pieceNodes.guard1}
+			{position === game.piecesNormalisedForDisplay.guard2 && pieceNodes.guard2}
+			{position === game.piecesNormalisedForDisplay.jester && pieceNodes.jester}
+			{position === game.piecesNormalisedForDisplay.queen && pieceNodes.queen}
+			{position === game.piecesNormalisedForDisplay.witch && pieceNodes.witch}
 		</div>
 	);
 }
@@ -101,27 +96,36 @@ function App() {
 		setTurn((n) => n + 1);
 	}; // TODO: Make something better
 
+	// TODO: Unsure if these need to be defined like this to make animations work
+	const pieceNodes = {
+		guard1: <GamePiece type='guard1' />,
+		guard2: <GamePiece type='guard2' />,
+		jester: <GamePiece type='jester' />,
+		queen: <GamePiece type='queen' />,
+		witch: <GamePiece type='witch' />,
+	};
+
 	return (
-		<DndContext
-			onDragEnd={({ active, over }) => {
-				if (!over) {
-					return;
-				}
+		<div className="App">
+			<DndContext
+				onDragEnd={({ active, over }) => {
+					if (!over) {
+						return;
+					}
 
-				const newPieces = {
-					...game.pieces,
-					[active.id as Piece]: Number(over.id),
-				};
+					const newPieces = {
+						...game.pieces,
+						[active.id as Piece]: Number(over.id),
+					};
 
-				if (!arePositionsValid(newPieces)) {
-					return;
-				}
+					if (!arePositionsValid(newPieces)) {
+						return;
+					}
 
-				game.pieces = newPieces;
-				jankyRerender();
-			}}
-		>
-			<div className="App">
+					game.pieces = newPieces;
+					jankyRerender();
+				}}
+			>
 				<div className="board">
 					{range(-8, 9).map((position) => {
 						const side =
@@ -134,7 +138,7 @@ function App() {
 								key={position}
 								className={`board-tile board-tile-${side} ${chateauClass}`}
 							>
-								<GamePieceSpace position={position} />
+								<GamePieceSpace position={position} pieceNodes={pieceNodes} />
 								<div className="crown-space">
 									{position === game.crownPosition && (
 										<img
@@ -149,40 +153,42 @@ function App() {
 						);
 					})}
 				</div>
-				<div>Deck: ({game.deck.cards.length})</div>
-				<div className="card-groups">
-					{Object.values(
-						groupBy(game.bluePlayer.cards, ({ group }) => group),
-					).map((cardGroup, i) => {
-						cardGroup = orderBy(
-							cardGroup,
-							(card) => {
-								// Sort, with special cards at the front
-								return "move" in card ? card.move : 10;
-							},
-							// Then reverse!
-							["desc"],
-						);
+			</DndContext>
+			<div>Deck: ({game.deck.cards.length})</div>
+			<div className="card-groups">
+				{Object.values(
+					groupBy(game.bluePlayer.cards, ({ group }) => group),
+				).map((cardGroup, i) => {
+					cardGroup = orderBy(
+						cardGroup,
+						(card) => {
+							// Sort, with special cards at the front
+							return "move" in card ? card.move : 10;
+						},
+						// Then reverse!
+						["desc"],
+					);
 
-						return (
-							<div key={i} className="card-group">
-								{cardGroup.map((card, i) => {
-									const isLast = i === cardGroup.length - 1;
-									return (
-										<div
-											className={`card-wrapper ${
-												isLast ? "" : "card-wrapper-limited"
-											}`}
-										>
-											<CardDisplay key={i} card={card} />
-										</div>
-									);
-								})}
-							</div>
-						);
-					})}
-				</div>
-				{/* <ul
+					return (
+						<div key={i} className="card-group">
+							{cardGroup.map((card, i) => {
+								const isLast = i === cardGroup.length - 1;
+								return (
+									<div
+										key={i}
+										className={`card-wrapper ${
+											isLast ? "" : "card-wrapper-limited"
+										}`}
+									>
+										<CardDisplay card={card} />
+									</div>
+								);
+							})}
+						</div>
+					);
+				})}
+			</div>
+			{/* <ul
 					style={{
 						display: "flex",
 						width: "100%",
@@ -250,8 +256,7 @@ function App() {
 						);
 					})}
 				</ul> */}
-			</div>
-		</DndContext>
+		</div>
 	);
 }
 
