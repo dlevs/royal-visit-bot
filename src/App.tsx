@@ -1,8 +1,9 @@
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { range } from "lodash";
+import { groupBy, orderBy, range } from "lodash";
 import { useState } from "react";
 import "./App.css";
+import { Card } from "./models/cards";
 import { Game, Piece } from "./models/Game";
 import { arePositionsValid } from "./models/moves";
 
@@ -36,8 +37,34 @@ function GamePiece({ type }: { type: Piece }) {
 	);
 }
 
+function CardDisplay({ card }: { card: Card }) {
+	const imageSrcType = card.group === "guard" ? "guard1" : card.group;
+	const text =
+		card.type === "guards-flank-queen"
+			? "Q"
+			: card.type === "jester-move-middle"
+			? "M"
+			: card.move;
+
+	return (
+		<div className={`card card-type-${card.group}`}>
+			<div className="card-text">{text}</div>
+			<img src={`${imageSrcType}.png`} alt="" />
+		</div>
+	);
+}
+
 function GamePieceSpace({ position }: { position: number }) {
-	const { isOver, setNodeRef } = useDroppable({ id: position });
+	const { isOver, active, setNodeRef } = useDroppable({ id: position });
+	let background = "transparent";
+
+	if (active) {
+		const isValid = arePositionsValid({
+			...game.pieces,
+			[active.id as Piece]: position,
+		});
+		background = isValid ? "green" : "red";
+	}
 
 	return (
 		<div
@@ -46,6 +73,7 @@ function GamePieceSpace({ position }: { position: number }) {
 			style={{
 				// TODO: CSS in JS solution
 				outline: isOver ? "2px #ccc solid" : undefined,
+				background,
 			}}
 		>
 			{position === game.piecesNormalisedForDisplay.guard1 && (
@@ -122,7 +150,39 @@ function App() {
 					})}
 				</div>
 				<div>Deck: ({game.deck.cards.length})</div>
-				<ul
+				<div className="card-groups">
+					{Object.values(
+						groupBy(game.bluePlayer.cards, ({ group }) => group),
+					).map((cardGroup, i) => {
+						cardGroup = orderBy(
+							cardGroup,
+							(card) => {
+								// Sort, with special cards at the front
+								return "move" in card ? card.move : 10;
+							},
+							// Then reverse!
+							["desc"],
+						);
+
+						return (
+							<div key={i} className="card-group">
+								{cardGroup.map((card, i) => {
+									const isLast = i === cardGroup.length - 1;
+									return (
+										<div
+											className={`card-wrapper ${
+												isLast ? "" : "card-wrapper-limited"
+											}`}
+										>
+											<CardDisplay key={i} card={card} />
+										</div>
+									);
+								})}
+							</div>
+						);
+					})}
+				</div>
+				{/* <ul
 					style={{
 						display: "flex",
 						width: "100%",
@@ -189,7 +249,7 @@ function App() {
 							</li>
 						);
 					})}
-				</ul>
+				</ul> */}
 			</div>
 		</DndContext>
 	);

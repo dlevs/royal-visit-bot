@@ -35,26 +35,21 @@
   height: 4rem;
   display: flex;
   align-items: center;
-  border-color: #b0afaf;
-  /* background: #f0f0f0; */
-  border-style: solid;
-  border-width: 3px;
+  color: #b0afaf;
+  border: 3px solid currentColor;
   border-radius: 1rem;
 }
 
 .board-tile-red .crown-space {
-  border-color: #f98275;
-  /* background: #fff3ff; */
+  color: #f98275;
 }
 
 .board-tile-blue .crown-space {
-  border-color: #92c6e3;
-  /* background: #e6edfd; */
+  color: #92c6e3;
 }
 
 .board-tile-chateau .crown-space {
-  border-color: #fbd700;
-  /* background: #fdfae2; */
+  color: #fbd700;
 }
 
 .piece-space {
@@ -97,4 +92,88 @@
 
 .piece-img-queen {
   z-index: 4;
+}
+
+.card-groups {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.card-group {
+  position: relative;
+}
+
+.card-group:hover {
+  z-index: 1;
+}
+
+.card-group:hover .card {
+  background: currentColor;
+  border-color: #fff;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-wrapper-limited {
+  max-height: 3rem;
+}
+
+.card-wrapper:nth-child(even) .card {
+  transform-origin: bottom right;
+}
+
+.card-group:hover .card-wrapper .card {
+  transform: translateY(-1rem) rotate(1deg);
+}
+
+.card-group:hover .card-wrapper:nth-child(even) .card {
+  transform: translateY(-1rem) rotate(-1deg);
+}
+
+/* .card-group:hover .card-wrapper:last-child .card {
+  transform: translateY(-1rem);
+} */
+
+.card-group:hover .card img {
+	animation: bounce 0.6s infinite ease-in-out;
+}
+
+.card-group:hover .card-text {
+  color: #fff;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid currentColor;
+  aspect-ratio: 0.7;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  background: #fff;
+  transform-origin: bottom left;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.card img {
+  display: block;
+  width: 60%;
+}
+
+.card-text {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
 }

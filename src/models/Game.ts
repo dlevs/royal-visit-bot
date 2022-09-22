@@ -9,10 +9,14 @@ export type PiecePositions = {
 };
 
 export class Game {
-	deck: Deck;
-	players: Player[];
-	turnPlayer: Player;
-	crownPosition: number;
+	deck: Deck = new Deck(this);
+
+	bluePlayer = new Player(this, "blue");
+	redPlayer = new Player(this, "red");
+	players = [this.bluePlayer, this.redPlayer];
+	turnPlayer = this.bluePlayer;
+
+	crownPosition = 0;
 	pieces: PiecePositions;
 
 	static DEFAULT_PIECE_POSITIONS: PiecePositions = {
@@ -24,11 +28,6 @@ export class Game {
 	};
 
 	constructor(pieces: Partial<PiecePositions> = Game.DEFAULT_PIECE_POSITIONS) {
-		this.deck = new Deck(this);
-		this.players = [new Player(this, "red"), new Player(this, "blue")];
-		this.turnPlayer = this.players[0];
-		this.crownPosition = 0;
-
 		// TODO: Validate this
 		this.pieces = { ...Game.DEFAULT_PIECE_POSITIONS, ...pieces };
 
@@ -40,7 +39,7 @@ export class Game {
 	// TODO: Document. And probably do this the other way around -
 	// special getter for the calculations, not display?
 	get piecesNormalisedForDisplay() {
-		if (this.turnPlayer.color === "blue") {
+		if (this.turnPlayer === this.redPlayer) {
 			return this.flipBoard({ ...this.pieces });
 		}
 		return this.pieces;
