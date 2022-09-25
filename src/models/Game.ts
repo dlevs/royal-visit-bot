@@ -45,13 +45,15 @@ export class Game {
 		return this.pieces;
 	}
 
-	playTurn(option: number) {
-		this.turnPlayer.playTurn(option);
+	playTurn(pieces: PiecePositions) {
+		this.pieces = pieces;
+		// TODO: this.turnPlayer.playTurn() no longer needed
+		// TODO: Put this back
 		this.turnPlayer.draw();
-		this.turnPlayer = this.players.find(
-			(player) => player !== this.turnPlayer,
-		)!;
-		this.flipBoard();
+		// this.turnPlayer = this.players.find(
+		// 	(player) => player !== this.turnPlayer,
+		// )!;
+		// this.flipBoard();
 		this.score();
 	}
 
@@ -84,3 +86,5 @@ export class Game {
 		return pieces;
 	}
 }
+
+export const game = new Game();

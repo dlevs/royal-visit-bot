@@ -2,12 +2,12 @@ import { css } from "@emotion/react";
 import { groupBy, orderBy } from "lodash";
 import { useRef } from "react";
 import { useHoverDirty } from "react-use";
-import type { Game } from "../models/Game";
 import type { Card } from "../models/cards";
+import { game } from "../models/Game";
 import { PlayerCard } from "./PlayerCard";
 
 // TODO: improve this component name
-export function PlayerCardLists({ game }: { game: Game }) {
+export function PlayerCardLists() {
 	const cardGroups = Object.values(
 		groupBy(game.bluePlayer.cards, ({ group }) => group),
 	).map((group) => {
