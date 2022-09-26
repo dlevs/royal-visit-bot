@@ -1,8 +1,10 @@
 import { useDraggable } from "@dnd-kit/core";
-import { game, Piece } from "../models/Game";
+import { useSnapshot } from "valtio";
+import { game, Piece } from "../models/game";
 import { pieceStyles } from "../styles/variables";
 
 export function GamePiece({ type }: { type: Piece }) {
+	const snap = useSnapshot(game);
 	const { attributes, listeners, setNodeRef, transform, active } = useDraggable(
 		{
 			id: type,
@@ -34,7 +36,7 @@ export function GamePiece({ type }: { type: Piece }) {
 				src={`${type}.png`}
 				style={{
 					transition: active ? "none" : "transform 0.3s ease",
-					transform: game.pieces[type] < 0 ? "scaleX(-1)" : "scaleX(1)",
+					transform: snap.pieces[type] < 0 ? "scaleX(-1)" : "scaleX(1)",
 				}}
 				alt=""
 			/>

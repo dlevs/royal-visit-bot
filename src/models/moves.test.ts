@@ -1,6 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { Card } from "./cards";
-import type { Game, PiecePositions, PlayerColor } from "./game";
+import {
+	createGame,
+	DEFAULT_PIECE_POSITIONS,
+	Game,
+	PiecePositions,
+	PlayerColor,
+} from "./game";
 import { moveUsingCards, moves, expandMove, PossibleTurn } from "./moves";
 
 describe("useCardsToMove()", () => {
@@ -172,13 +178,13 @@ function testMove(
 	expectedEndPositions: Partial<PiecePositions>,
 	expectedCardsUsedCount: number,
 ) {
-	const game = new Game(startPositions);
-	game.turnPlayer.cards = cards;
-	const turn = expandMove(game, moveFunction(game.turnPlayer))!;
+	const game = createGame(startPositions);
+	game.players.blue.cards = cards;
+	const turn = expandMove(game, moveFunction(game, "blue"))!;
 
 	expect(turn).not.toBeNull();
 	expect(turn.piecesNewPositions).toMatchObject({
-		...Game.DEFAULT_PIECE_POSITIONS,
+		...DEFAULT_PIECE_POSITIONS,
 		...expectedEndPositions,
 	});
 	expect(turn.cardsUsed).toHaveLength(expectedCardsUsedCount);

@@ -1,5 +1,5 @@
 import { useSnapshot } from "valtio";
-import { GameBoard } from "./components/gameBoard";
+import { GameBoard } from "./components/GameBoard";
 import { PlayerCardLists } from "./components/PlayerCardLists";
 import { game } from "./models/game";
 
