@@ -24,4 +24,9 @@ injectGlobal`
     display: block;
     max-width: 100%;
   }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
 `;

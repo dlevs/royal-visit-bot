@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import { groupBy, orderBy } from "lodash";
 import { useRef } from "react";
 import { useHoverDirty } from "react-use";
@@ -24,13 +23,13 @@ export function PlayerCardLists() {
 
 	return (
 		<div
-			css={css`
-				display: flex;
-				gap: 1rem;
-				padding: 1rem;
-				max-width: 800px;
-				margin: 0 auto;
-			`}
+			css={{
+				display: "flex",
+				gap: "1rem",
+				padding: "1rem",
+				maxWidth: 800,
+				margin: "0 auto",
+			}}
 		>
 			{cardGroups.map((cardGroup) => {
 				return <PlayerCardList cards={cardGroup} key={cardGroup[0].group} />;
@@ -46,12 +45,12 @@ function PlayerCardList({ cards }: { cards: Card[] }) {
 	return (
 		<div
 			ref={ref}
-			css={css`
-				position: relative;
-				&:hover {
-					z-index: 1;
-				}
-			`}
+			css={{
+				position: "relative",
+				"&:hover": {
+					zIndex: 1,
+				},
+			}}
 		>
 			{cards.map((card, i) => {
 				const isLast = i === cards.length - 1;
@@ -59,21 +58,19 @@ function PlayerCardList({ cards }: { cards: Card[] }) {
 				return (
 					<div
 						key={i}
-						css={css`
-							max-height: ${isLast ? "none" : "3rem"};
-						`}
+						style={{
+							maxHeight: isLast ? "none" : "3rem",
+						}}
 					>
 						<PlayerCard
 							card={card}
 							active={isHovering}
-							css={css`
-								transform-origin: bottom ${isEven ? "left" : "right"};
-								transform: ${
-									isHovering
-										? `translateY(-1rem) rotate(${isEven ? "-1deg" : "1deg"})`
-										: "none"
-								};
-							`}
+							css={{
+								transformOrigin: `bottom ${isEven ? "left" : "right"}`,
+								transform: isHovering
+									? `translateY(-1rem) rotate(${isEven ? "-1deg" : "1deg"})`
+									: "none",
+							}}
 						/>
 					</div>
 				);

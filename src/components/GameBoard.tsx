@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import { range } from "lodash";
 import { useState } from "react";
 import { GamePiece } from "./GamePiece";
@@ -44,20 +43,20 @@ export function GameBoard() {
 			}}
 		>
 			<div
-				css={css`
-						display: flex;
-						gap: 1px;
-						width: 100%;
-					`}
+				css={{
+					display: "flex",
+					gap: 2,
+					width: "100%",
+				}}
 			>
 				{range(-8, 9).map((position) => {
 					return (
 						<div
 							key={position}
-							css={css`
-									flex: 1;
-  								border-color: #eee;
-								`}
+							css={{
+								flex: 1,
+								borderColor: "#eee",
+							}}
 						>
 							<GameBoardSpacePiece
 								position={position}
