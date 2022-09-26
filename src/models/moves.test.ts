@@ -1,8 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { Card } from "./cards";
-import { Game, PiecePositions } from "./Game";
+import type { Game, PiecePositions, PlayerColor } from "./game";
 import { moveUsingCards, moves, expandMove, PossibleTurn } from "./moves";
-import { Player } from "./Player";
 
 describe("useCardsToMove()", () => {
 	test("handles simple cases", () => {
@@ -168,7 +167,7 @@ describe("moves", () => {
 
 function testMove(
 	cards: Card[],
-	moveFunction: (player: Player) => PossibleTurn,
+	moveFunction: (game: Game, playerColor: PlayerColor) => PossibleTurn,
 	startPositions: Partial<PiecePositions>,
 	expectedEndPositions: Partial<PiecePositions>,
 	expectedCardsUsedCount: number,

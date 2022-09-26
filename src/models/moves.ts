@@ -5,8 +5,7 @@ import {
 	getSingleGuardsFlankQueenCard,
 	getSingleJesterMiddleCard,
 } from "./cards";
-import type { Game, Piece, PiecePositions } from "./Game";
-import type { Player } from "./Player";
+import type { Game, Piece, PiecePositions, PlayerColor } from "./game";
 import { isTruthy } from "./util";
 
 export type PossibleTurn = {
@@ -28,12 +27,15 @@ type PossibleTurnExpanded = {
 	cardsUsed: Card[];
 };
 
-export function getPossibleMoves(player: Player): PossibleTurnExpanded[] {
+export function getPossibleMoves(
+	game: Game,
+	playerColor: PlayerColor,
+): PossibleTurnExpanded[] {
 	const possibleMoves = Object.values(moves).flatMap((getMoves) => {
-		return getMoves(player);
+		return getMoves(game, playerColor);
 	});
 
-	const expandedMoves = expandMoves(player.game, possibleMoves);
+	const expandedMoves = expandMoves(game, possibleMoves);
 
 	expandedMoves.forEach(validateMove);
 
@@ -41,11 +43,12 @@ export function getPossibleMoves(player: Player): PossibleTurnExpanded[] {
 }
 
 export const moves = {
-	moveJester(player: Player): PossibleTurn {
+	moveJester(game: Game, playerColor: PlayerColor): PossibleTurn {
+		const player = game.players[playerColor];
 		const middleCard = getSingleJesterMiddleCard(player.cards);
 		const moveCards = filterMoveCards(player.cards, "jester-move");
 
-		let from = player.game.pieces.jester;
+		let from = game.pieces.jester;
 		const useMiddle = middleCard && from < 0;
 
 		if (useMiddle) {
@@ -59,27 +62,25 @@ export const moves = {
 			cardsUsed: [useMiddle && middleCard, ...cardsUsed].filter(isTruthy),
 		};
 	},
-	moveWitch(player: Player): PossibleTurn {
+	moveWitch(game: Game, playerColor: PlayerColor): PossibleTurn {
+		const player = game.players[playerColor];
 		const moveCards = filterMoveCards(player.cards, "witch-move");
-		const { to, cardsUsed } = moveUsingCards(
-			player.game.pieces.witch,
-			8,
-			moveCards,
-		);
+		const { to, cardsUsed } = moveUsingCards(game.pieces.witch, 8, moveCards);
 
 		return {
 			piecesToMove: [{ type: "witch", to }],
 			cardsUsed,
 		};
 	},
-	moveQueen(player: Player): PossibleTurn {
+	moveQueen(game: Game, playerColor: PlayerColor): PossibleTurn {
+		const player = game.players[playerColor];
 		const moveCards = filterMoveCards(player.cards, "queen-move");
 
-		let guard1To = player.game.pieces.guard1;
-		let guard2To = player.game.pieces.guard2;
+		let guard1To = game.pieces.guard1;
+		let guard2To = game.pieces.guard2;
 		let { to: queenTo, cardsUsed } = moveUsingCards(
-			player.game.pieces.queen,
-			player.game.pieces.guard1 - 1,
+			game.pieces.queen,
+			game.pieces.guard1 - 1,
 			moveCards,
 		);
 
@@ -112,11 +113,12 @@ export const moves = {
 			cardsUsed,
 		};
 	},
-	moveGuards(player: Player): PossibleTurn {
+	moveGuards(game: Game, playerColor: PlayerColor): PossibleTurn {
+		const player = game.players[playerColor];
 		const guardFlankCard = getSingleGuardsFlankQueenCard(player.cards);
 		const moveCards = filterMoveCards(player.cards, "guard-move");
 
-		let { guard1, guard2, queen } = player.game.pieces;
+		let { guard1, guard2, queen } = game.pieces;
 
 		// TODO: Put in flanqueen logic
 		const useFlank = guardFlankCard;
@@ -148,8 +150,8 @@ export const moves = {
 			].filter(isTruthy),
 		};
 	},
-	movePiecesWithWitch(player: Player): PossibleTurn[] {
-		const { witch } = player.game.pieces;
+	movePiecesWithWitch(game: Game): PossibleTurn[] {
+		const { witch } = game.pieces;
 		const output: PossibleTurn[] = [];
 
 		for (const key of ["guard1", "guard2", "queen"] as const) {
@@ -164,7 +166,7 @@ export const moves = {
 			});
 		}
 
-		return expandMoves(player.game, output).filter(
+		return expandMoves(game, output).filter(
 			(move) => arePositionsValid(move.piecesNewPositions),
 		);
 	},

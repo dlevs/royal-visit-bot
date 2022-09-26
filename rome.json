@@ -1,7 +1,6 @@
 {
   "formatter": {
-    "enabled": true,
-    "formatWithErrors": true
+    "enabled": true
   },
   "linter": {
     "enabled": true,

@@ -1,4 +1,4 @@
-import { game } from "../models/Game";
+import { game } from "../models/game";
 
 export function GameBoardSpaceScoreMarker({ position }: { position: number }) {
 	const side = position === 0 ? "middle" : position < 0 ? "blue" : "red";
