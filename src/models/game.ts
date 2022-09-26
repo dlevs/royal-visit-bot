@@ -1,5 +1,5 @@
 import { clamp, shuffle } from "lodash";
-import { proxy } from "valtio";
+import { proxy, useSnapshot } from "valtio";
 import { allCards, Card } from "./cards";
 
 export interface Game {
@@ -37,8 +37,19 @@ export const DEFAULT_PIECE_POSITIONS: PiecePositions = {
 	guard2: -2,
 };
 
-export const game = createGame();
-export const gameActions = createGameActions(game);
+const game = createGame();
+const gameActions = createGameActions(game);
+
+export function useGame() {
+	const state = useSnapshot(game);
+
+	return {
+		state,
+		actions: gameActions,
+		// TODO: Revisit when more is formalised in actions
+		dangerousLiveState: game,
+	};
+}
 
 export function createGame(pieces: Partial<PiecePositions> = {}) {
 	const state = proxy<Game>({

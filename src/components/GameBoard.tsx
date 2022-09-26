@@ -1,14 +1,13 @@
 import { range } from "lodash";
 import { GamePiece } from "./GamePiece";
-import { game, Piece } from "../models/game";
+import { useGame, Piece } from "../models/game";
 import { arePositionsValid } from "../models/moves";
 import { DndContext } from "@dnd-kit/core";
 import { GameBoardSpacePiece } from "./GameBoardSpacePiece";
 import { GameBoardSpaceScoreMarker } from "./GameBoardSpaceScoreMarker";
-import { useSnapshot } from "valtio";
 
 export function GameBoard() {
-	const snap = useSnapshot(game);
+	const { state, dangerousLiveState } = useGame();
 	// TODO: Unsure if these need to be defined like this to make animations work
 	const pieceNodes = {
 		guard1: <GamePiece type='guard1' />,
@@ -26,7 +25,7 @@ export function GameBoard() {
 				}
 
 				const newPieces = {
-					...snap.pieces,
+					...state.pieces,
 					[active.id as Piece]: Number(over.id),
 				};
 
@@ -34,7 +33,7 @@ export function GameBoard() {
 					return;
 				}
 
-				game.pieces = newPieces;
+				dangerousLiveState.pieces = newPieces;
 			}}
 		>
 			<div

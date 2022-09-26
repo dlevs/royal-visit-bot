@@ -1,8 +1,7 @@
-import { useSnapshot } from "valtio";
-import { game } from "../models/game";
+import { useGame } from "../models/game";
 
 export function GameBoardSpaceScoreMarker({ position }: { position: number }) {
-	const snap = useSnapshot(game);
+	const { state } = useGame();
 	const side = position === 0 ? "middle" : position < 0 ? "blue" : "red";
 
 	return (
@@ -21,7 +20,7 @@ export function GameBoardSpaceScoreMarker({ position }: { position: number }) {
 					side === "red" ? "#f98275" : side === "blue" ? "#92c6e3" : "#fbd700",
 			}}
 		>
-			{position === snap.crownPosition && (
+			{position === state.crownPosition && (
 				<img src="crown.png" alt="Crown game piece" title="Crown" />
 			)}
 		</div>

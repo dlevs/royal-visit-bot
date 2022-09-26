@@ -1,16 +1,15 @@
 import { groupBy, orderBy } from "lodash";
 import { useRef } from "react";
 import { useHoverDirty } from "react-use";
-import { useSnapshot } from "valtio";
 import type { Card } from "../models/cards";
-import { game } from "../models/game";
+import { useGame } from "../models/game";
 import { PlayerCard } from "./PlayerCard";
 
 // TODO: improve this component name
 export function PlayerCardLists() {
-	const snap = useSnapshot(game);
+	const { state } = useGame();
 	const cardGroups = Object.values(
-		groupBy(snap.players.blue.cards, ({ group }) => group),
+		groupBy(state.players.blue.cards, ({ group }) => group),
 	).map((group) => {
 		return orderBy(
 			group,

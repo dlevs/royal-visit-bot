@@ -1,15 +1,14 @@
-import { useSnapshot } from "valtio";
 import { GameBoard } from "./components/GameBoard";
 import { PlayerCardLists } from "./components/PlayerCardLists";
-import { game } from "./models/game";
+import { useGame } from "./models/game";
 
 function App() {
-	const snap = useSnapshot(game);
+	const { state } = useGame();
 
 	return (
 		<div>
 			<GameBoard />
-			<div>Deck: ({snap.deck.cards.length})</div>
+			<div>Deck: ({state.deck.cards.length})</div>
 			<PlayerCardLists />
 		</div>
 	);
