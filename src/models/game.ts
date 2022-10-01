@@ -14,6 +14,7 @@ export interface Game {
 	};
 	crownPosition: number;
 	pieces: PiecePositions;
+	selectedCardGroup: null | Card["group"];
 }
 
 interface Player {
@@ -64,6 +65,7 @@ export function createGame(pieces: Partial<PiecePositions> = {}) {
 		},
 		pieces: { ...DEFAULT_PIECE_POSITIONS, ...pieces },
 		crownPosition: 0,
+		selectedCardGroup: null,
 	});
 
 	// Game init. Can probably be refactored.

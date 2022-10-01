@@ -34,6 +34,7 @@ export function GameBoard() {
 				}
 
 				dangerousLiveState.pieces = newPieces;
+				dangerousLiveState.selectedCardGroup = null;
 			}}
 		>
 			<div

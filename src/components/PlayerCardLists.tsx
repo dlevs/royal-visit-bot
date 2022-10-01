@@ -41,13 +41,26 @@ export function PlayerCardLists() {
 
 function PlayerCardList({ cards }: { cards: Card[] }) {
 	const ref = useRef(null);
+	const game = useGame();
 	const isHovering = useHoverDirty(ref);
+	const cardGroup = cards[0]!.group;
+	const isSelected = game.dangerousLiveState.selectedCardGroup === cardGroup;
 
 	return (
-		<div
+		<button
 			ref={ref}
+			onClick={() => {
+				if (game.state.selectedCardGroup === cardGroup) {
+					game.dangerousLiveState.selectedCardGroup = null;
+				} else {
+					game.dangerousLiveState.selectedCardGroup = cardGroup;
+				}
+			}}
 			css={{
 				position: "relative",
+				appearance: "none",
+				background: "none",
+				border: "none",
 				"&:hover": {
 					zIndex: 1,
 				},
@@ -65,17 +78,19 @@ function PlayerCardList({ cards }: { cards: Card[] }) {
 					>
 						<PlayerCard
 							card={card}
-							active={isHovering}
+							selected={isSelected}
+							hovered={isHovering}
 							css={{
 								transformOrigin: `bottom ${isEven ? "left" : "right"}`,
-								transform: isHovering
-									? `translateY(-1rem) rotate(${isEven ? "-1deg" : "1deg"})`
-									: "none",
+								transform:
+									isSelected || isHovering
+										? `translateY(-1rem) rotate(${isEven ? "-2deg" : "2deg"})`
+										: "none",
 							}}
 						/>
 					</div>
 				);
 			})}
-		</div>
+		</button>
 	);
 }
