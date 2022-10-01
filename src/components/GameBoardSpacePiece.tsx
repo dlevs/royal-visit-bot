@@ -1,15 +1,26 @@
 import { useDroppable } from "@dnd-kit/core";
 import { ReactElement } from "react";
 import { Piece, useGame } from "../models/game";
-import { arePositionsValid } from "../models/moves";
 
 export function GameBoardSpacePiece({ position, pieceNodes }: {
 	position: number;
 	pieceNodes: Record<Piece, ReactElement>;
 }) {
 	const { state, actions } = useGame();
-	const { isOver, active, setNodeRef } = useDroppable({ id: position });
+	const { isOver, setNodeRef } = useDroppable({ id: position });
 	let background = "transparent";
+
+	// TODO: horribly inefficient (cache / lift state up 1 level), and why this fn signature ("blue")?
+	if (state.selectedCardGroup) {
+		const validMovements = actions.player.getValidMovements(
+			"blue",
+			state.selectedCardGroup,
+		);
+
+		if (validMovements.includes(position)) {
+			background = "#9bdfa9";
+		}
+	}
 
 	// if (state.selectedCardGroup) {
 	// 	const isValid = arePositionsValid({

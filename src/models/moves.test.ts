@@ -12,7 +12,7 @@ import {
 	moves,
 	expandMove,
 	PossibleTurn,
-	getPossibleMovesUsingCards,
+	getPossibleMovementUsingCards,
 } from "./moves";
 
 function mapMoves(moves: number[]) {
@@ -67,10 +67,10 @@ describe("useCardsToMove()", () => {
 	});
 });
 
-describe("getPossibleMovesUsingCards()", () => {
+describe("getPossibleMovementUsingCards()", () => {
 	test("calculates correct distances with most cards possible", () => {
 		expect(
-			getPossibleMovesUsingCards(0, mapMoves([1, 2, 5, 5, 10])),
+			getPossibleMovementUsingCards(0, mapMoves([1, 2, 5, 5, 10])),
 		).toMatchObject([
 			// 1
 			toPossibility(1, [1]),

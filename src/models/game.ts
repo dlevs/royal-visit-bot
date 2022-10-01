@@ -1,6 +1,7 @@
 import { clamp, shuffle } from "lodash";
 import { proxy, useSnapshot } from "valtio";
-import { allCards, Card } from "./cards";
+import { allCards, Card, filterMoveCards } from "./cards";
+import { arePositionsValid, getPossibleMovementUsingCards } from "./moves";
 
 export interface Game {
 	deck: {
@@ -131,24 +132,24 @@ export function createGameActions(state: Game) {
 		},
 		getValidMovements(playerColor: "red" | "blue", cardGroup: Card["group"]) {
 			const player = state.players[playerColor];
-			const cards = player.cards.filter((card) => {
-				// TODO: Undo this
-				if (card.type !== "guards-flank-queen") {
-					return false;
-				}
-
-				return card.group === cardGroup;
-			});
+			const cards = filterMoveCards(player.cards, `${cardGroup}-move`);
 			// TODO: Undo
 			if (cardGroup !== "witch" && cardGroup !== "jester") {
 				throw new Error("Not yet implemented");
 			}
 
 			const piece = state.pieces[cardGroup];
-			// for (const key of pieceKeys) {
-			// 	pieces[key] = -pieces[key];
-			// }
+			// TODO: Rename `getPossibleMovementUsingCards`, and restructure a little.
+			const movements = getPossibleMovementUsingCards(piece, cards);
 
+			const validMovements = movements.filter(({ to }) => {
+				return arePositionsValid({
+					...state.pieces,
+					[piece]: to,
+				});
+			});
+
+			return validMovements.map(({ to }) => to);
 		},
 	};
 

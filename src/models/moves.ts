@@ -1,4 +1,4 @@
-import { chunk, sortBy, sum } from "lodash";
+import { chunk, sum } from "lodash";
 import {
 	Card,
 	filterMoveCards,
@@ -218,6 +218,11 @@ export function arePositionsValid(positions: PiecePositions): boolean {
 		return false;
 	}
 
+	const hasOutOfBounds = Object.values(positions).some((n) => n < -8 || n > 8);
+	if (hasOutOfBounds) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -232,12 +237,11 @@ function mapMovementsToValidCards<T extends { move: number }>(
 	moves: number[],
 	cards: T[],
 ) {
-	const sortedCards = sortBy(cards, (card) => card.move);
 	const cardsUsed: T[] = [];
 
 	for (const move of moves) {
 		cardsUsed.push(
-			sortedCards.find((card) => {
+			cards.find((card) => {
 				return card.move === move && !cardsUsed.includes(card);
 			})!,
 		);
@@ -260,7 +264,7 @@ export function moveUsingCards<T extends { move: number }>(
 	};
 }
 
-export function getPossibleMovesUsingCards<T extends { move: number }>(
+export function getPossibleMovementUsingCards<T extends { move: number }>(
 	from: number,
 	cards: T[],
 ) {
@@ -282,7 +286,7 @@ export function getPossibleMovesUsingCards<T extends { move: number }>(
  * https://stackoverflow.com/a/47908354
  */
 function maxSum(input: number[], limit: number) {
-	input = [...input].sort();
+	input = [...input].sort((a, b) => a - b);
 
 	const sums: Record<number, number[]> = {};
 	let max = 0;
