@@ -228,17 +228,14 @@ function validateMove(move: PossibleTurnExpanded) {
 	}
 }
 
-export function moveUsingCards<
-	T extends {
-		move: number;
-	},
->(from: number, toTarget: number, cards: T[]) {
+function mapMovementsToValidCards<T extends { move: number }>(
+	moves: number[],
+	cards: T[],
+) {
 	const sortedCards = sortBy(cards, (card) => card.move);
-	const distance = toTarget - from;
-	const movesUsed = maxSum(sortedCards.map((x) => x.move), distance);
 	const cardsUsed: T[] = [];
 
-	for (const move of movesUsed) {
+	for (const move of moves) {
 		cardsUsed.push(
 			sortedCards.find((card) => {
 				return card.move === move && !cardsUsed.includes(card);
@@ -246,10 +243,36 @@ export function moveUsingCards<
 		);
 	}
 
+	return cardsUsed;
+}
+
+export function moveUsingCards<T extends { move: number }>(
+	from: number,
+	toTarget: number,
+	cards: T[],
+) {
+	const distance = toTarget - from;
+	const movesUsed = maxSum(cards.map((x) => x.move), distance);
+
 	return {
 		to: from + sum(movesUsed),
-		cardsUsed,
+		cardsUsed: mapMovementsToValidCards(movesUsed, cards),
 	};
+}
+
+export function getPossibleMovesUsingCards<T extends { move: number }>(
+	from: number,
+	cards: T[],
+) {
+	const possibilities = possibleSums(cards.map((x) => x.move));
+
+	// TODO: Validate?
+	return possibilities.map(({ total, components }) => {
+		return {
+			to: from + total,
+			cardsUsed: mapMovementsToValidCards(components, cards),
+		};
+	});
 }
 
 /**
@@ -259,6 +282,8 @@ export function moveUsingCards<
  * https://stackoverflow.com/a/47908354
  */
 function maxSum(input: number[], limit: number) {
+	input = [...input].sort();
+
 	const sums: Record<number, number[]> = {};
 	let max = 0;
 
@@ -280,4 +305,23 @@ function maxSum(input: number[], limit: number) {
 	collectSums(0, 0, []);
 
 	return sums[max] || [];
+}
+
+export function possibleSums(input: number[]) {
+	let max = sum(input);
+	let output: {
+		total: number;
+		components: number[];
+	}[] = [];
+
+	// This is likely horribly inefficient. Might be fine for this use case.
+	for (let n = 1; n <= max; n++) {
+		const components = maxSum(input, n);
+		const total = sum(components);
+		if (total === n) {
+			output.push({ total, components });
+		}
+	}
+
+	return output;
 }

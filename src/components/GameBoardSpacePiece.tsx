@@ -11,13 +11,21 @@ export function GameBoardSpacePiece({ position, pieceNodes }: {
 	const { isOver, active, setNodeRef } = useDroppable({ id: position });
 	let background = "transparent";
 
-	if (active) {
-		const isValid = arePositionsValid({
-			...state.pieces,
-			[active.id as Piece]: position,
-		});
-		background = isValid ? "green" : "red";
-	}
+	// if (state.selectedCardGroup) {
+	// 	const isValid = arePositionsValid({
+	// 		...state.pieces,
+	// 		[active.id as Piece]: position,
+	// 	});
+	// 	background = isValid ? "green" : "red";
+	// }
+
+	// if (active) {
+	// 	const isValid = arePositionsValid({
+	// 		...state.pieces,
+	// 		[active.id as Piece]: position,
+	// 	});
+	// 	background = isValid ? "green" : "red";
+	// }
 
 	return (
 		<div

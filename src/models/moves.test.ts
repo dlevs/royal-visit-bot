@@ -7,108 +7,100 @@ import {
 	PiecePositions,
 	PlayerColor,
 } from "./game";
-import { moveUsingCards, moves, expandMove, PossibleTurn } from "./moves";
+import {
+	moveUsingCards,
+	moves,
+	expandMove,
+	PossibleTurn,
+	getPossibleMovesUsingCards,
+} from "./moves";
+
+function mapMoves(moves: number[]) {
+	return moves.map((move) => ({ move }));
+}
 
 describe("useCardsToMove()", () => {
 	test("handles simple cases", () => {
-		expect(moveUsingCards(1, 2, [{ move: 1 }])).toMatchObject({
+		expect(moveUsingCards(1, 2, mapMoves([1]))).toMatchObject({
 			to: 2,
-			cardsUsed: [{ move: 1 }],
+			cardsUsed: mapMoves([1]),
 		});
 
-		expect(moveUsingCards(0, 8, [{ move: 4 }, { move: 3 }])).toMatchObject({
+		expect(moveUsingCards(0, 8, mapMoves([4, 3]))).toMatchObject({
 			to: 7,
-			cardsUsed: [{ move: 3 }, { move: 4 }],
+			cardsUsed: mapMoves([3, 4]),
 		});
 	});
 
 	test("uses the most cards possible to get as close as possible", () => {
-		expect(
-			moveUsingCards(0, 5, [
-				// Use these...
-				{ move: 2 },
-				{ move: 3 },
-				// ...not this:
-				{ move: 5 },
-			]),
-		).toMatchObject({
+		expect(moveUsingCards(0, 5, mapMoves([2, 3, 5]))).toMatchObject({
 			to: 5,
-			cardsUsed: [{ move: 2 }, { move: 3 }],
+			cardsUsed: mapMoves([2, 3]),
 		});
 
 		// And in reverse, to be sure
-		expect(
-			moveUsingCards(0, 5, [
-				// Don't use this...
-				{ move: 5 },
-				// ...use these:
-				{ move: 3 },
-				{ move: 2 },
-			]),
-		)
+		expect(moveUsingCards(0, 5, mapMoves([5, 3, 2])))
 			.toMatchObject({
 				to: 5,
-				cardsUsed: [{ move: 2 }, { move: 3 }],
+				cardsUsed: mapMoves([2, 3]),
 			});
 
-		expect(
-			moveUsingCards(0, 5, [
-				// Ignore this:
-				{ move: 1 },
-				// Use these:
-				{ move: 2 },
-				{ move: 3 },
-				// Ignore this:
-				{ move: 5 },
-			]),
-		).toMatchObject({
+		expect(moveUsingCards(0, 5, mapMoves([1, 2, 3, 5]))).toMatchObject({
 			to: 5,
-			cardsUsed: [{ move: 2 }, { move: 3 }],
+			cardsUsed: mapMoves([2, 3]),
 		});
 
-		expect(
-			moveUsingCards(0, 8, [
-				// Use this:
-				{ move: 4 },
-				// Ignore this:
-				{ move: 3 },
-				// Use these:
-				{ move: 2 },
-				{ move: 2 },
-			]),
-		).toMatchObject({
+		expect(moveUsingCards(0, 8, mapMoves([4, 3, 2, 2]))).toMatchObject({
 			to: 8,
-			cardsUsed: [{ move: 2 }, { move: 2 }, { move: 4 }],
+			cardsUsed: mapMoves([2, 2, 4]),
 		});
 
-		expect(
-			moveUsingCards(0, 8, [
-				// Use these:
-				{ move: 1 },
-				{ move: 2 },
-				// Ignore this:
-				{ move: 3 },
-				// Use this:
-				{ move: 5 },
-			]),
-		).toMatchObject({
+		expect(moveUsingCards(0, 8, mapMoves([1, 2, 3, 5]))).toMatchObject({
 			to: 8,
-			cardsUsed: [{ move: 1 }, { move: 2 }, { move: 5 }],
+			cardsUsed: mapMoves([1, 2, 5]),
 		});
 
-		expect(
-			moveUsingCards(0, 7, [
-				// Use these
-				{ move: 1 },
-				{ move: 4 },
-				// Ignore this:
-				{ move: 4 },
-			]),
-		).toMatchObject({
+		expect(moveUsingCards(0, 7, mapMoves([1, 4, 4]))).toMatchObject({
 			to: 5,
-			cardsUsed: [{ move: 1 }, { move: 4 }],
+			cardsUsed: mapMoves([1, 4]),
 		});
 	});
+});
+
+describe("getPossibleMovesUsingCards()", () => {
+	test("calculates correct distances with most cards possible", () => {
+		expect(
+			getPossibleMovesUsingCards(0, mapMoves([1, 2, 5, 5, 10])),
+		).toMatchObject([
+			// 1
+			toPossibility(1, [1]),
+			toPossibility(2, [2]),
+			toPossibility(3, [1, 2]),
+			toPossibility(5, [5]),
+			toPossibility(6, [1, 5]),
+			toPossibility(7, [2, 5]),
+			toPossibility(8, [1, 2, 5]),
+			toPossibility(10, [5, 5]),
+			toPossibility(11, [1, 5, 5]),
+			toPossibility(12, [2, 5, 5]),
+			toPossibility(13, [1, 2, 5, 5]),
+			toPossibility(15, [5, 10]),
+			toPossibility(16, [1, 5, 10]),
+			toPossibility(17, [2, 5, 10]),
+			toPossibility(18, [1, 2, 5, 10]),
+			toPossibility(20, [5, 5, 10]),
+			toPossibility(21, [1, 5, 5, 10]),
+			toPossibility(22, [2, 5, 5, 10]),
+			toPossibility(23, [1, 2, 5, 5, 10]),
+		]);
+	});
+
+	function toPossibility(to: number, moves: number[]) {
+		return {
+			to,
+			cardsUsed: mapMoves(moves),
+		};
+	}
 });
 
 // TODO: Test others, like wizard, guards and witch

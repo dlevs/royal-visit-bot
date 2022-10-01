@@ -129,6 +129,27 @@ export function createGameActions(state: Game) {
 				return !cards.includes(card);
 			});
 		},
+		getValidMovements(playerColor: "red" | "blue", cardGroup: Card["group"]) {
+			const player = state.players[playerColor];
+			const cards = player.cards.filter((card) => {
+				// TODO: Undo this
+				if (card.type !== "guards-flank-queen") {
+					return false;
+				}
+
+				return card.group === cardGroup;
+			});
+			// TODO: Undo
+			if (cardGroup !== "witch" && cardGroup !== "jester") {
+				throw new Error("Not yet implemented");
+			}
+
+			const piece = state.pieces[cardGroup];
+			// for (const key of pieceKeys) {
+			// 	pieces[key] = -pieces[key];
+			// }
+
+		},
 	};
 
 	const game = {

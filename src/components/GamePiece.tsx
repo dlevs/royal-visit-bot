@@ -4,14 +4,14 @@ import { pieceStyles } from "../styles/variables";
 
 export function GamePiece({ type }: { type: Piece }) {
 	const { state } = useGame();
+
 	const group = type === "guard1" || type === "guard2" ? "guard" : type;
-	const isSelectedGroup = state.selectedCardGroup === group;
-	const isDisabled = state.selectedCardGroup != null && !isSelectedGroup;
+	const isAnyGroupSelected = state.selectedCardGroup != null;
+	const isThisGroupSelected = state.selectedCardGroup === group;
+	const isDeemphasized = isAnyGroupSelected && !isThisGroupSelected;
+
 	const { attributes, listeners, setNodeRef, transform, isDragging } =
-		useDraggable({
-			id: type,
-			disabled: isDisabled,
-		});
+		useDraggable({ id: type, disabled: !isThisGroupSelected });
 
 	const transitions = ["filter 0.3s ease", "opacity 0.3s ease"];
 
@@ -32,14 +32,18 @@ export function GamePiece({ type }: { type: Piece }) {
 				userSelect: "none",
 			}}
 			style={{
-				zIndex: pieceStyles[group].zIndex,
-				cursor: isDisabled ? "not-allowed" : isDragging ? "grabbing" : "grab",
+				zIndex: isThisGroupSelected ? 10 : pieceStyles[group].zIndex,
+				cursor: isThisGroupSelected
+					? isDragging
+						? "grabbing"
+						: "grab"
+					: "not-allowed",
 				transition: transitions.join(", "),
 				transform: transform
 					? `translate3d(${transform.x}px, ${transform.y}px, 0)`
 					: "translate3d(0, 0, 0)",
-				filter: isDisabled ? "grayscale(1)" : "none",
-				opacity: isDisabled ? 0.7 : 1,
+				filter: isDeemphasized ? "grayscale(1)" : "none",
+				opacity: isDeemphasized ? 0.7 : 1,
 			}}
 		>
 			<img
@@ -48,7 +52,7 @@ export function GamePiece({ type }: { type: Piece }) {
 					transition: isDragging ? "none" : "transform 0.3s ease",
 					transform: state.pieces[type] < 0 ? "scaleX(-1)" : "scaleX(1)",
 					animation:
-						isSelectedGroup && !isDragging
+						isThisGroupSelected && !isDragging
 							? "bounce 0.6s infinite ease-in-out"
 							: "none",
 				}}
