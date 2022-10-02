@@ -15,11 +15,11 @@ export interface Game {
 	};
 	crownPosition: number;
 	pieces: PiecePositions;
-	selectedCardGroup: null | Card["group"];
-	hoveredCardGroup: null | Card["group"];
+	selectedCards: number[];
 }
 
 interface Player {
+	// TODO: Just IDs here
 	cards: Card[];
 }
 
@@ -67,8 +67,7 @@ export function createGame(pieces: Partial<PiecePositions> = {}) {
 		},
 		pieces: { ...DEFAULT_PIECE_POSITIONS, ...pieces },
 		crownPosition: 0,
-		selectedCardGroup: null,
-		hoveredCardGroup: null,
+		selectedCards: [],
 	});
 
 	// Game init. Can probably be refactored.
@@ -91,7 +90,7 @@ export function createGameActions(state: Game) {
 			];
 
 			deck.cards = shuffle([...allCards]).filter((card) => {
-				return !cardsInPlay.includes(card);
+				return !cardsInPlay.map(({ id }) => id).includes(card.id);
 			});
 
 			deck.phase++;
@@ -129,7 +128,7 @@ export function createGameActions(state: Game) {
 		discardCards(playerColor: "red" | "blue", cards: Card[]) {
 			const player = state.players[playerColor];
 			player.cards = player.cards.filter((card) => {
-				return !cards.includes(card);
+				return !cards.map(({ id }) => id).includes(card.id);
 			});
 		},
 		getValidMovements(playerColor: "red" | "blue", cardGroup: Card["group"]) {
