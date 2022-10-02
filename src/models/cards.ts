@@ -1,3 +1,5 @@
+import { shuffle } from "lodash";
+
 const cardDefinitions: CardDefinition[] = [
 	{
 		qty: 4,
@@ -79,16 +81,12 @@ const cardDefinitions: CardDefinition[] = [
 
 export const allCards = Object.freeze(
 	cardDefinitions.flatMap(({ qty, ...rest }) => {
-		return Array.from({ length: qty }).map(
-			(): Card => ({
-				// We spread here so each card can be compared
-				// with referential checks, allowing us to filter
-				// cards in a hand without removing all of one
-				// type at the same time.
-				...rest,
-			}),
-		);
-	}),
+		return Array.from({ length: qty }).map(() => rest);
+	}).map(
+		(card, i): Card => {
+			return { ...card, id: i };
+		},
+	),
 );
 
 export function filterMoveCards<
@@ -119,7 +117,9 @@ export function getSingleGuardsFlankQueenCard(cards: Card[]) {
 	return card as null | GuardFlankCard;
 }
 
-export type Card =
+export type Card = { id: number } & CardAttributes;
+
+type CardAttributes =
 	| GuardMovementCard
 	| GuardFlankCard
 	| QueenMovementCard
@@ -127,7 +127,7 @@ export type Card =
 	| JesterMovementCard
 	| JesterMiddleCard;
 
-type CardDefinition = Card & { qty: number };
+type CardDefinition = CardAttributes & { qty: number };
 
 interface GuardMovementCard {
 	group: "guard";

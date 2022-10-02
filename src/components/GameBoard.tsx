@@ -7,15 +7,11 @@ import { GameBoardSpacePiece } from "./GameBoardSpacePiece";
 import { GameBoardSpaceScoreMarker } from "./GameBoardSpaceScoreMarker";
 
 export function GameBoard() {
-	const { state, dangerousLiveState } = useGame();
-	// TODO: Unsure if these need to be defined like this to make animations work
-	const pieceNodes = {
-		guard1: <GamePiece type='guard1' />,
-		guard2: <GamePiece type='guard2' />,
-		jester: <GamePiece type='jester' />,
-		queen: <GamePiece type='queen' />,
-		witch: <GamePiece type='witch' />,
-	};
+	const { state, actions, dangerousLiveState } = useGame();
+	const groupToShow = state.selectedCardGroup ?? state.hoveredCardGroup;
+	const validMovements = groupToShow
+		? actions.player.getValidMovements("blue", groupToShow)
+		: [];
 
 	return (
 		<DndContext
@@ -34,14 +30,14 @@ export function GameBoard() {
 				}
 
 				dangerousLiveState.pieces = newPieces;
-				dangerousLiveState.selectedCardGroup = null;
+				// dangerousLiveState.selectedCardGroup = null;
 			}}
 		>
 			<div
 				css={{
 					display: "flex",
-					gap: 2,
 					width: "100%",
+					padding: "2rem",
 				}}
 			>
 				{range(-8, 9).map((position) => {
@@ -55,8 +51,28 @@ export function GameBoard() {
 						>
 							<GameBoardSpacePiece
 								position={position}
-								pieceNodes={pieceNodes}
-							/>
+								valid={validMovements.includes(position)}
+							>
+								{/* TODO: This "piecesNormalisedForDisplay" is nonsense */}
+								{position ===
+									actions.game.piecesNormalisedForDisplay.guard1 && (
+									<GamePiece type="guard1" />
+								)}
+								{position ===
+									actions.game.piecesNormalisedForDisplay.guard2 && (
+									<GamePiece type="guard2" />
+								)}
+								{position ===
+									actions.game.piecesNormalisedForDisplay.jester && (
+									<GamePiece type="jester" />
+								)}
+								{position === actions.game.piecesNormalisedForDisplay.queen && (
+									<GamePiece type="queen" />
+								)}
+								{position === actions.game.piecesNormalisedForDisplay.witch && (
+									<GamePiece type="witch" />
+								)}
+							</GameBoardSpacePiece>
 							<GameBoardSpaceScoreMarker position={position} />
 						</div>
 					);

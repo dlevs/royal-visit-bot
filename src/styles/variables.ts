@@ -12,3 +12,10 @@ export const pieceStyles: Record<
 	jester: { color: "#ff7e00", zIndex: 3 },
 	queen: { color: "#c20061", zIndex: 4 },
 };
+
+export const tileTypeStyles = {
+	red: { color: "#f98275" },
+	blue: { color: "#92c6e3" },
+	middle: { color: "#cdcbc3" },
+	chateau: { color: "#fbd700" },
+};

@@ -6,8 +6,9 @@ export function GamePiece({ type }: { type: Piece }) {
 	const { state } = useGame();
 
 	const group = type === "guard1" || type === "guard2" ? "guard" : type;
-	const isAnyGroupSelected = state.selectedCardGroup != null;
-	const isThisGroupSelected = state.selectedCardGroup === group;
+	const activeGroup = state.selectedCardGroup ?? state.hoveredCardGroup;
+	const isAnyGroupSelected = activeGroup != null;
+	const isThisGroupSelected = activeGroup === group;
 	const isDeemphasized = isAnyGroupSelected && !isThisGroupSelected;
 
 	const { attributes, listeners, setNodeRef, transform, isDragging } =

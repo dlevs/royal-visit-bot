@@ -1,7 +1,7 @@
 import { Card } from "../models/cards";
 import { pieceStyles } from "../styles/variables";
 
-export function PlayerCard({ card, hovered, selected, className }:
+export function PlayerCard({ card, selected, className }:
 	& { card: Card; selected: boolean; hovered: boolean; className?: string }) {
 	const imageSrcType = card.group === "guard" ? "guard1" : card.group;
 	const text =
@@ -54,9 +54,9 @@ export function PlayerCard({ card, hovered, selected, className }:
 				src={`${imageSrcType}.png`}
 				alt=""
 				css={{ width: "60%" }}
-				style={{
-					animation: hovered ? "bounce 0.6s infinite ease-in-out" : "none",
-				}}
+			// style={{
+			// 	animation: hovered ? "bounce 0.6s infinite ease-in-out" : "none",
+			// }}
 			/>
 		</div>
 	);

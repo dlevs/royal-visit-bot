@@ -16,6 +16,7 @@ export interface Game {
 	crownPosition: number;
 	pieces: PiecePositions;
 	selectedCardGroup: null | Card["group"];
+	hoveredCardGroup: null | Card["group"];
 }
 
 interface Player {
@@ -56,7 +57,7 @@ export function useGame() {
 export function createGame(pieces: Partial<PiecePositions> = {}) {
 	const state = proxy<Game>({
 		deck: {
-			cards: shuffle([...allCards]),
+			cards: [],
 			phase: 0,
 		},
 		players: {
@@ -67,10 +68,12 @@ export function createGame(pieces: Partial<PiecePositions> = {}) {
 		pieces: { ...DEFAULT_PIECE_POSITIONS, ...pieces },
 		crownPosition: 0,
 		selectedCardGroup: null,
+		hoveredCardGroup: null,
 	});
 
 	// Game init. Can probably be refactored.
 	const actions = createGameActions(state);
+	actions.deck.shuffle();
 	actions.player.drawCards("red");
 	actions.player.drawCards("blue");
 
@@ -82,18 +85,17 @@ export function createGameActions(state: Game) {
 		shuffle() {
 			const deck = { ...state.deck };
 
-			if (state.deck.phase === 0) {
-				const cardsInPlay = [
-					...state.players.blue.cards,
-					...state.players.red.cards,
-				];
+			const cardsInPlay = [
+				...state.players.blue.cards,
+				...state.players.red.cards,
+			];
 
-				deck.cards = [...allCards].filter((card) => {
-					return !cardsInPlay.includes(card);
-				});
-			}
+			deck.cards = shuffle([...allCards]).filter((card) => {
+				return !cardsInPlay.includes(card);
+			});
 
 			deck.phase++;
+			state.deck = deck;
 		},
 		draw(n: number) {
 			const cards: Card[] = [];
@@ -149,7 +151,7 @@ export function createGameActions(state: Game) {
 				});
 			});
 
-			return validMovements.map(({ to }) => to);
+			return validMovements;
 		},
 	};
 

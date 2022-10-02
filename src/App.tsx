@@ -1,5 +1,5 @@
 import { GameBoard } from "./components/GameBoard";
-import { PlayerCardLists } from "./components/PlayerCardLists";
+import { PlayerCardList } from "./components/PlayerCardList";
 import { useGame } from "./models/game";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 		<div>
 			<GameBoard />
 			<div>Deck: ({state.deck.cards.length})</div>
-			<PlayerCardLists />
+			<PlayerCardList />
 		</div>
 	);
 }
